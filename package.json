@@ -1,0 +1,23 @@
+{
+  "name": "@faddymichel/scenarist",
+  "version": "1.0.0",
+  "description": "A function that wraps around an pobject to navigate through its properties and perform actions on them",
+  "type": "module",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faddymichel/scenarist.git"
+  },
+  "author": "Faddy Violette Michel <faddy.michel@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/faddymichel/scenarist/issues"
+  },
+  "homepage": "https://github.com/faddymichel/scenarist#readme"
+}
