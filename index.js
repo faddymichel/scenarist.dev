@@ -8,7 +8,7 @@ const scenarist = Scenarist .bind ( {
 
 [ $ .signature ]: true,
 script: scenario [ 0 ] .script,
-setting: scenario [ 0 ] ?.setting,
+setting: scenario [ 0 ] ?.setting || {},
 [ $ .history ]: { [ Symbol .for ( 'scenarist/location' ) ]: scenario [ 0 ] ?.[ $ .location ] || [] },
 get scenarist () { return scenarist }
 
@@ -28,6 +28,10 @@ if ( ! scenario .length )
 return { scenarist, script, setting, scenario, location };
 
 const direction = scenario .shift ();
+
+if ( ! Object .hasOwn ( setting, direction ) && ! Object .hasOwn ( script, direction ) )
+throw Error ( 'Unknown direction' );
+
 const conflict = scenario .conflict = setting ?.[ direction ] || script ?.[ direction ];
 
 switch ( typeof conflict ) {
@@ -43,9 +47,6 @@ setting,
 
 case 'function':
 return conflict .call ( setting ?.[ direction ] ? scenarist : script, ... scenario );
-
-case 'undefined':
-throw Error ( 'Unknown direction' );
 
 }
 
