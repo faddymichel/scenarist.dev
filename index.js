@@ -28,11 +28,10 @@ if ( ! scenario .length )
 return { scenarist, script, setting, scenario, location };
 
 const direction = scenario .shift ();
-
-if ( ! Object .hasOwn ( setting, direction ) && ! Object .hasOwn ( script, direction ) )
-throw Error ( 'Unknown direction' );
-
 const conflict = scenario .conflict = setting ?.[ direction ] || script ?.[ direction ];
+
+if ( typeof conflict !== 'function' && ! Object .getOwnPropertyDescriptor ( setting, direction ) && ! Object .getOwnPropertyDescriptor ( script, direction ) )
+throw Error ( 'Unknown direction' );
 
 switch ( typeof conflict ) {
 
