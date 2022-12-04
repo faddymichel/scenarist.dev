@@ -27,8 +27,14 @@ const location = history [ Symbol .for ( 'scenarist/location' ) ];
 if ( ! scenario .length )
 return { scenarist, script, setting, scenario, location };
 
-const direction = scenario .shift ();
-const conflict = scenario .conflict = setting ?.[ direction ] || script ?.[ direction ];
+const [ direction ] = scenario;
+let conflict;
+
+if ( typeof script === 'function' )
+conflict = setting ?.[ direction ] ? setting [ scenario .shift () ] : script;
+
+else
+conflict = scenario .conflict = setting ?.[ scenario .shift () ] || script ?.[ direction ];
 
 if ( typeof conflict !== 'function' && ! Object .getOwnPropertyDescriptor ( setting, direction ) && ! Object .getOwnPropertyDescriptor ( script, direction ) )
 throw Error ( 'Unknown direction' );
@@ -36,6 +42,7 @@ throw Error ( 'Unknown direction' );
 switch ( typeof conflict ) {
 
 case 'object':
+case 'function':
 return ( history [ conflict ] || ( history [ conflict ] = Scenarist ( {
 
 script: conflict,
@@ -44,8 +51,10 @@ setting,
 
 } ) ) ) ( ... scenario );
 
+/*
 case 'function':
 return conflict .call ( setting ?.[ direction ] ? scenarist : script, ... scenario );
+*/
 
 }
 
