@@ -1,6 +1,6 @@
 {
   "name": "@faddymichel/scenarist",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "A function that wraps around an pobject to navigate through its properties and perform actions on them",
   "type": "module",
   "main": "index.js",
