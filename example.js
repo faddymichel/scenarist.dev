@@ -3,7 +3,16 @@ import { createInterface } from 'readline';
 
 const $ = Scenarist ( {
 
-script: { yallah: 'Salah Abdallah!' }
+script: {
+
+yallah: 'Salah Abdallah!',
+meen () {
+
+return this .yallah;
+
+}
+
+}
 
 } );
 const cli = createInterface ( {
@@ -22,7 +31,7 @@ console .log ( $ ( ... line .trim () .toLowerCase () .split ( /\s+/ ) ) );
 
 } catch ( error ) {
 
-console .error ( error .toString ());
+console .error ( 'No no no!' );
 
 }
 
