@@ -32,6 +32,7 @@ console .log ( $ ( ... line .trim () .toLowerCase () .split ( /\s+/ ) ) );
 } catch ( error ) {
 
 console .error ( 'No no no!' );
+console .error ( 'See what you did!', error .toString () );
 
 }
 
