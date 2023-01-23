@@ -5,10 +5,10 @@ const $ = Scenarist ( {
 
 script: {
 
-yallah: 'Salah Abdallah!',
-meen () {
+$yallah: 'Salah Abdallah!',
+$meen () {
 
-return this .yallah;
+return this .$yallah;
 
 }
 
