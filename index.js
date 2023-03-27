@@ -9,13 +9,18 @@ const scenarist = Scenarist .bind ( {
 [ $ .signature ]: true,
 script: scenario [ 0 ] .script,
 setting: scenario [ 0 ] ?.setting || {},
-history: { [ $ .location ]: scenario [ 0 ] ?.[ $ .location ] || [] },
+director: scenario [ 0 ] ?.director === true ? true : false,
+history: new Map ( [ [ $ .location, scenario [ 0 ] ?.[ $ .location ] || [] ] ] ),
 binder: scenario [ 0 ] [ $ .binder ],
 get scenarist () { return scenarist }
 
 } );
 
-return scenarist;
+return Object .defineProperty ( scenarist, 'name', {
+
+value: scenario [ 0 ] ?.[ $ .location ] instanceof Array ? 'scenarist:' + scenario [ 0 ] ?.[ $ .location ] .join ( '/' ) : 'scenarist'
+
+} );
 
 }
 
@@ -24,9 +29,9 @@ return;
 
 scenario = scenario ?.[ 0 ] ?.[ $ .scenario ] || scenario;
 
-const { scenarist, script, setting, history, binder } = this;
-const location = history [ $ .location ];
-let [ direction ] = scenario;
+const { scenarist, script, setting, director, history, binder } = this;
+const location = history .get ( $ .location );
+const [ direction ] = scenario;
 let $direction;
 
 if ( direction === Symbol .for ( 'scenarist/details' ) )
@@ -40,8 +45,11 @@ return setting [ scenario .shift () ] .call ( scenarist, ... scenario );
 else if ( typeof script === 'function' )
 return script .call ( binder .script, ... scenario );
 
-else if ( typeof script ?.[ $direction = '$' + scenario .shift () ] !== 'undefined' )
+else if ( [ 'string', 'number' ] .includes ( typeof direction ) && typeof script ?.[ $direction = '$' + direction ] !== 'undefined' )
 conflict = scenario .conflict = script [ $direction ];
+
+else if ( director && typeof script ?.[ direction ] !== 'undefined' )
+conflict = scenario .conflict = script [ direction ];
 
 else
 throw Object .assign ( Error ( 'Unknown direction' ), {
@@ -51,18 +59,25 @@ code: Symbol .for ( 'scenarist/error/unknown-direction' )
 
 } );
 
+scenario .shift ();
+
 switch ( typeof conflict ) {
 
 case 'object':
 case 'function':
-return ( history [ conflict ] || ( history [ conflict ] = Scenarist ( {
+
+if ( ! history .get ( conflict ) )
+history .set ( conflict, Scenarist ( {
 
 script: conflict,
 setting,
+director,
 [ $ .binder ]: { script, scenarist },
-[ $ .location ]: [ ... location, direction || $direction ]
+[ $ .location ]: [ ... location, direction ]
 
-} ) ) ) ( ... scenario );
+} ) );
+
+return history .get ( conflict ) ( ... scenario );
 
 }
 

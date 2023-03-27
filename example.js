@@ -3,8 +3,10 @@ import { createInterface } from 'readline';
 
 const $ = Scenarist ( {
 
-script: {
+//director: true,
+script: Object .setPrototypeOf ( {
 
+koko: 'wawa',
 $yallah: 'Salah Abdallah!',
 $meen () {
 
@@ -12,7 +14,7 @@ return this .$yallah;
 
 }
 
-}
+}, console )
 
 } );
 const cli = createInterface ( {
