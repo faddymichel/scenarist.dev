@@ -1,24 +1,24 @@
 export default function Scenarist ( ... scenario ) {
 
-if ( ! this ?.[ $ .signature ] )
+if ( ! this ?.[ $ .play ] )
 
 if ( [ 'object', 'function' ] .includes ( typeof scenario [ 0 ] ?.script ) ) {
 
-const scenarist = Scenarist .bind ( {
+const play = Scenarist .bind ( {
 
-[ $ .signature ]: true,
+[ $ .play ]: true,
 script: scenario [ 0 ] .script,
 setting: scenario [ 0 ] ?.setting || {},
 director: scenario [ 0 ] ?.director === true ? true : false,
 history: new Map ( [ [ $ .location, scenario [ 0 ] ?.[ $ .location ] || [] ] ] ),
 binder: scenario [ 0 ] [ $ .binder ],
-get scenarist () { return scenarist }
+get play () { return play }
 
 } );
 
-return Object .defineProperty ( scenarist, 'name', {
+return Object .defineProperty ( play, 'name', {
 
-value: scenario [ 0 ] ?.[ $ .location ] instanceof Array ? 'scenarist:' + scenario [ 0 ] ?.[ $ .location ] .join ( '/' ) : 'scenarist'
+value: scenario [ 0 ] ?.[ $ .location ] instanceof Array ? 'play:' + scenario [ 0 ] ?.[ $ .location ] .join ( '/' ) : 'play'
 
 } );
 
@@ -29,18 +29,18 @@ return;
 
 scenario = scenario ?.[ 0 ] ?.[ $ .scenario ] || scenario;
 
-const { scenarist, script, setting, director, history, binder } = this;
+const { play, script, setting, director, history, binder } = this;
 const location = history .get ( $ .location );
 const [ direction ] = scenario;
 let $direction;
 
-if ( direction === Symbol .for ( 'scenarist/details' ) )
-return { scenarist, script, setting, binder, scenario, location };
+if ( direction === Symbol .for ( 'play/details' ) )
+return { play, script, setting, binder, scenario, location };
 
 let conflict;
 
 if ( typeof setting ?.[ direction ] === 'function' && ! Object .prototype [ direction ] )
-return setting [ scenario .shift () ] .call ( scenarist, ... scenario );
+return setting [ scenario .shift () ] .call ( play, ... scenario );
 
 else if ( typeof script === 'function' )
 return script .call ( binder .script, ... scenario );
@@ -55,7 +55,7 @@ else
 throw Object .assign ( Error ( 'Unknown direction' ), {
 
 direction,
-code: Symbol .for ( 'scenarist/error/unknown-direction' )
+code: Symbol .for ( 'play/error/unknown-direction' )
 
 } );
 
@@ -72,7 +72,7 @@ history .set ( conflict, Scenarist ( {
 script: conflict,
 setting,
 director,
-[ $ .binder ]: { script, scenarist },
+[ $ .binder ]: { script, play },
 [ $ .location ]: [ ... location, direction ]
 
 } ) );
@@ -87,10 +87,10 @@ return conflict;
 
 const $ = {
 
-signature: Symbol ( 'scenarist/$signature' ),
-scenario: Symbol ( 'scenarist/$scenario' ),
-history: Symbol ( 'scenarist/$history' ),
-location: Symbol ( 'scenarist/$location' ),
-binder: Symbol ( 'scenarist/binder' )
+play: Symbol ( 'play/$play' ),
+scenario: Symbol ( 'play/$scenario' ),
+history: Symbol ( 'play/$history' ),
+location: Symbol ( 'play/$location' ),
+binder: Symbol ( 'play/binder' )
 
 };

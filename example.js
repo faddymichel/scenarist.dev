@@ -3,10 +3,10 @@ import { createInterface } from 'readline';
 
 const $ = Scenarist ( {
 
-//director: true,
+director: true,
 script: Object .setPrototypeOf ( {
 
-koko: 'wawa',
+[ Symbol .for ( 'koko' ) ]: 'wawa',
 $yallah: 'Salah Abdallah!',
 $meen () {
 
@@ -43,3 +43,5 @@ cli .prompt ();
 } );
 
 cli .prompt ();
+
+console .log ( $ ( Symbol .for ( 'koko' ) ) );
