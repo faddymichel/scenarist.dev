@@ -1,7 +1,7 @@
 {
-  "name": "@faddymichel/scenarist",
-  "version": "1.3.3",
-  "description": "A function that wraps around an pobject to navigate through its properties and perform actions on them",
+  "name": "scenarist.dev",
+  "version": "0.0.1",
+  "description": "To Handle Multiple Events Using a Single Function",
   "type": "module",
   "main": "index.js",
   "directories": {
