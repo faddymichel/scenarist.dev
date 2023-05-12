@@ -2,7 +2,7 @@ export default function Scenarist ( ... order ) {
 
 if ( ! this ?.[ $ .play ] )
 
-if ( typeof order [ 0 ] === 'object' ) {
+if ( [ 'object', 'function' ] .includes ( typeof order [ 0 ] ) ) {
 
 const play = Scenarist .bind ( {
 
@@ -13,11 +13,10 @@ get play () { return play }
 } );
 const script = {
 
-story: order [ 0 ] .story || {},
-scenario: typeof order [ 0 ] .scenario === 'object' ? order [ 0 ] .scenario : {},
-location: order [ 0 ] ?.[ $ .location ] || [],
-director: order [ 0 ] [ $ .director ],
-signature: order [ 0 ] .signature
+scenario: order [ 0 ],
+location: order [ 1 ] ?.[ $ .location ] || [],
+director: order [ 1 ] ?.[ $ .director ],
+signature: order [ 1 ] ?.signature
 
 };
 
@@ -35,25 +34,20 @@ value: signature => signature === script .signature || signature === $ .signatur
 }
 
 else
-return;
-
-order = order ?.[ 0 ] ?.[ $ .order ] || order;
+throw TypeError ( "Scenarist: 'scenario' must be either an 'object' or 'function'." );
 
 const { play, history } = this;
-const { story, scenario, location, director } = play .script ( $ .signature );
+const { scenario, location, director } = play .script ( $ .signature );
 const [ direction ] = order;
 let $direction;
 
 let conflict;
 
-if ( typeof scenario ?.[ direction ] === 'function' && ! Object .prototype [ direction ] )
-return scenario [ order .shift () ] ( ... order );
+if ( typeof scenario === 'function' )
+return scenario .call ( director .script () .scenario, ... order );
 
-else if ( typeof story === 'function' )
-return story .call ( director .story, ... order );
-
-else if ( [ 'string', 'number' ] .includes ( typeof direction ) && typeof story ?.[ $direction = '$' + direction ] !== 'undefined' )
-conflict = order .conflict = story [ $direction ];
+else if ( [ 'string', 'number' ] .includes ( typeof direction ) && typeof scenario ?.[ $direction = '$' + direction ] !== 'undefined' )
+conflict = order .conflict = scenario [ $direction ];
 
 else
 throw Object .assign ( Error ( 'Unknown direction' ), {
@@ -71,11 +65,9 @@ case 'object':
 case 'function':
 
 if ( ! history .get ( conflict ) )
-history .set ( conflict, Scenarist ( {
+history .set ( conflict, Scenarist ( conflict, {
 
-story: conflict,
-scenario,
-[ $ .director ]: { story, play },
+[ $ .director ]: play,
 [ $ .location ]: [ ... location, direction ]
 
 } ) );

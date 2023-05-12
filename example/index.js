@@ -1,6 +1,8 @@
-import play from './checklist.js';
+import Scenarist from 'scenarist.dev';
 import { createInterface } from 'readline';
+import Checklist from './checklist.js';
 
+const play = Scenarist ( new Checklist );
 const cli = createInterface ( {
 
 input: process .stdin,

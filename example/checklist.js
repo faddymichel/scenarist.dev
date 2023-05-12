@@ -1,8 +1,4 @@
-import Scenarist from 'scenarist.dev';
-
-export default Scenarist ( {
-
-story: new ( class Checklist {
+export default class Checklist {
 
 $size = 0
 $completed = 0
@@ -65,6 +61,4 @@ return checklist .$size;
 
 }
 
-} ) ()
-
-} );
+};
