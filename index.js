@@ -39,14 +39,15 @@ throw TypeError ( "Scenarist: 'scenario' must be either an 'object' or 'function
 const { play, history } = this;
 const { scenario, location, director } = play .script ( $ .signature );
 const [ direction ] = order;
-let $direction;
-
-let conflict;
+let conflict, $direction;
 
 if ( typeof scenario === 'function' )
-return scenario .call ( director .script () .scenario, ... order );
+return scenario .call ( director .script () .scenario, director, ... order );
 
 else if ( [ 'string', 'number' ] .includes ( typeof direction ) && typeof scenario ?.[ $direction = '$' + direction ] !== 'undefined' )
+conflict = order .conflict = scenario [ $direction ];
+
+else if ( typeof direction === 'symbol' && ( $direction = Symbol .keyFor ( direction ) ) && typeof scenario ?.[ $direction = '$_' + $direction ] !== 'undefined' )
 conflict = order .conflict = scenario [ $direction ];
 
 else
