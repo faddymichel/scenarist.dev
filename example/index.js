@@ -1,8 +1,8 @@
 import Scenarist from 'scenarist.dev';
 import { createInterface } from 'readline';
-import Checklist from './checklist.js';
+import Notebook from './notebook.js';
 
-const play = Scenarist ( new Checklist );
+const play = Scenarist ( new Notebook );
 const cli = createInterface ( {
 
 input: process .stdin,
@@ -14,7 +14,7 @@ cli .on ( 'line', async line => {
 
 try {
 
-console .log ( play ( ... line .trim () .toLowerCase () .split ( /\s+/ ) ) );
+console .log ( play ( ... line .trim () .split ( /\s+/ ) ) );
 
 } catch ( error ) {
 
