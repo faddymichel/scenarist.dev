@@ -4,30 +4,32 @@ if ( ! this ?.[ $ .play ] )
 
 if ( [ 'object', 'function' ] .includes ( typeof order [ 0 ] ) ) {
 
+const setting = {};
 const play = Scenarist .bind ( {
 
 [ $ .play ]: true,
-history: new Map (),
-get play () { return play }
+plot: new Map (),
+setting
 
 } );
-const script = {
 
+Object .assign ( setting, {
+
+play,
+stamp: order [ 1 ] ?.stamp,
 scenario: order [ 0 ],
-location: order [ 1 ] ?.[ $ .location ] || [],
-director: order [ 1 ] ?.[ $ .director ],
-signature: order [ 1 ] ?.signature
+location: [],
+player: order [ 1 ] ?.[ $ .player ],
+pilot: order [ 1 ] ?.[ $ .pilot ] || play
 
-};
+} );
 
-return Object .defineProperties ( play, {
+const { location } = setting;
 
-name: { value: 'play' + script .location .length ? `:${ script .location .join ( '/' ) }` : '' },
-script: {
+return Object .defineProperty ( play, 'name', {
 
-value: signature => signature === script .signature || signature === $ .signature ? script : undefined
-
-}
+value: 
+`play${ location .length ? ( ':' + location .map ( direction => direction .toString () ) .join ( '.' ) ) : '' }`
 
 } );
 
@@ -36,44 +38,69 @@ value: signature => signature === script .signature || signature === $ .signatur
 else
 throw TypeError ( "Scenarist: 'scenario' must be either an 'object' or 'function'." );
 
-const { play, history } = this;
-const { scenario, location, director } = play .script ( $ .signature );
-const [ direction ] = order;
+let { setting, plot } = this;
+let { play, stamp, scenario, location, player, pilot } = setting;
+let [ direction ] = order;
 let conflict, $direction;
 
 if ( typeof scenario === 'function' )
-return scenario .call ( director .script () .scenario, director, ... order );
+return scenario .call ( player ( stamp ) .scenario, player, ... order );
 
-else if ( [ 'string', 'number' ] .includes ( typeof direction ) && typeof scenario ?.[ $direction = '$' + direction ] !== 'undefined' )
-conflict = order .conflict = scenario [ $direction ];
+else if ( direction === stamp )
+return setting;
 
-else if ( typeof direction === 'symbol' && ( $direction = Symbol .keyFor ( direction ) ) && typeof scenario ?.[ $direction = '$_' + $direction ] !== 'undefined' )
-conflict = order .conflict = scenario [ $direction ];
+else if ( [ 'string', 'number' ] .includes ( typeof direction ) && direction ?.[ 0 ] !== '_' && typeof scenario ?.[ $direction = '$' + direction ] !== 'undefined' ) {
+
+conflict = scenario [ $direction ];
+
+order .shift ();
+
+}
+
+else if ( typeof direction === 'symbol' && ( $direction = Symbol .keyFor ( direction ) ) && typeof scenario ?.[ $direction = '$_' + $direction ] !== 'undefined' ) {
+
+conflict = scenario [ $direction ];
+
+order .shift ();
+
+}
+
+else if ( typeof scenario .$_director !== undefined )
+conflict = scenario .$_director;
 
 else
-throw Object .assign ( Error ( 'Unknown direction' ), {
+throw Object .assign ( Error ( `Unknown direction: [ ${ [ ... location, direction ] .join ( ' ' ) } ]` ), {
 
 direction,
+location,
 code: Symbol .for ( 'scenarist/error/unknown-direction' )
 
 } );
-
-order .shift ();
 
 switch ( typeof conflict ) {
 
 case 'object':
 case 'function':
 
-if ( ! history .get ( conflict ) )
-history .set ( conflict, Scenarist ( conflict, {
+if ( ! plot .get ( conflict ) )
+plot .set ( conflict, Scenarist ( conflict, {
 
-[ $ .director ]: play,
-[ $ .location ]: [ ... location, direction ]
+stamp,
+[ $ .player ]: play,
+[ $ .pilot ]: pilot
 
 } ) );
 
-return history .get ( conflict ) ( ... order );
+play = plot .get ( conflict );
+
+if ( typeof conflict === 'object' ) {
+
+setting = play ( stamp );
+setting .location = [ ... location, direction ];
+
+}
+
+return play ( ... order );
 
 }
 
@@ -83,11 +110,12 @@ return conflict;
 
 const $ = {
 
-signature: Symbol ( 'scenarist/signature' ),
+stamp: Symbol ( 'scenarist/stamp' ),
 play: Symbol ( 'scenarist/$play' ),
 order: Symbol ( 'scenarist/$order' ),
-history: Symbol ( 'scenarist/$history' ),
+plot: Symbol ( 'scenarist/$plot' ),
 location: Symbol ( 'scenarist/$location' ),
-director: Symbol ( 'scenarist/director' )
+player: Symbol ( 'scenarist/player' ),
+pilot: Symbol ( 'scenarist/pilot' )
 
 };
