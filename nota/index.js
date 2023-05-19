@@ -1,5 +1,7 @@
+#!/usr/bin/env node
+
 import Scenarist from 'scenarist.dev';
-import Shell from './shell.js';
+import Shell from 'scenarist.dev/shell';
 import Nota from './scenario/index.js';
 
 const stamp = Symbol .for ( 'nota/stamp' );

@@ -19,7 +19,7 @@ const order = play ( Symbol .for ( 'order' ) );
 
 notebook .splice ( order - 1, 1 );
 
-delete notebook [ '$#' + ( notebook .length + 1 ) ];
+delete notebook [ '$' + ( notebook .length + 1 ) ];
 
 return true;
 
@@ -59,7 +59,7 @@ $_order ( play ) {
 
 const { location } = play ( this .stamp );
 
-return parseInt ( location [ location .length - 1 ] .slice ( 1 ) );
+return parseInt ( location [ location .length - 1 ] );
 
 }
 
@@ -73,13 +73,20 @@ return [ pilot ( Symbol .for ( 'directions' ), scenario, input ), input ];
 
 $_prompt ( play ) {
 
-return `#${ play ( this .stamp ) .location .map ( direction => direction .slice ( 1 ) ) .join ( '.' ) }: `
+return `${ play ( this .stamp ) .location .join ( '.' ) }: `
 
 }
 
-[ '$.' ] ( play ) {
+[ '$.' ] ( play ) { return play }
 
-return play;
+[ '$..' ] ( play, ... order ) {
+
+const { stamp } = this;
+const { player } = play ( stamp );
+
+play = player ( stamp ) .scenario instanceof Note ? player : play;
+
+return order .length ? play ( ... order ) : play;
 
 }
 

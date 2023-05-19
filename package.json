@@ -5,13 +5,15 @@
   "type": "module",
   "exports": {
     ".": "./index.js",
-    "./example": "./example/index.js"
-  },
-  "directories": {
-    "example": "example"
+    "./nota": "./nota/index.js",
+    "./nota/scenario": "./nota/scenario/index.js",
+    "./shell": "./shell.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "nota": "node nota"
+  },
+  "bin": {
+    "nota": "./nota/index.js"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/faddymichel/scenarist/issues"
   },
-  "homepage": "https://github.com/faddymichel/scenarist#readme"
+  "homepage": "https://github.com/faddymichel/scenarist#readme",
+  "dependencies": {
+    "csound-api": "^0.10.20"
+  }
 }

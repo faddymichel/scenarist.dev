@@ -43,9 +43,8 @@ $_note ( play, note ) {
 const nota = this;
 const { $_content: notebook } = nota;
 const order = notebook .push ( note );
-const label = '#' + order;
 
-Object .defineProperty ( nota, '$' + label, {
+Object .defineProperty ( nota, '$' + order, {
 
 get: () => notebook [ order - 1 ],
 configurable: true,
@@ -53,13 +52,16 @@ enumerable: true
 
 } );
 
-return label;
+return order;
 
 }
 
-$_director ( play, ... order ) {
+$_director ( play, direction, ... order ) {
 
-if ( order .length )
+if ( ! isNaN ( parseInt ( direction ) ) )
+return play ( ... direction .split ( '.' ) .map ( direction => direction ), ... order );
+
+if ( direction ?.length )
 return;
 
 const nota = this;
@@ -68,10 +70,10 @@ const { location } = play ( stamp );
 let text = '';
 
 if ( title ?.length )
-text += `${ '#' .repeat ( location .length + 1 ) } ${ location .map ( direction => direction .slice ( 1 ) ) .join ( '.' ) }${ ( location .length ? '. ' : '' ) + title }`;
+text += `${ '#' .repeat ( location .length + 1 ) } ${ location .join ( '.' ) }${ ( location .length ? ' ' : '' ) + title }`;
 
 if ( notebook .length )
-text += `${ text .length ? '\n\n' : '' }${ notebook .map ( ( note, index ) => play ( '#' + ( index + 1 ), Symbol .for ( 'director' ) ) )
+text += `${ text .length ? '\n\n' : '' }${ notebook .map ( ( note, index ) => play ( index + 1, Symbol .for ( 'director' ) ) )
 .join ( '\n' ) }
 `;
 
