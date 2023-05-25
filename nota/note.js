@@ -1,13 +1,19 @@
 export default class Note {
 
-constructor ( { stamp, content } ) {
+constructor ( { stamp, content, pilot, publisher } ) {
 
-this .stamp = stamp;
-this .$_content = content;
+const note = this;
+
+Object .assign ( note, {
+
+stamp: stamp,
+$_content: content,
+publisher,
+$_director: typeof pilot === 'function' ? Scenarist ( publisher, { stamp, pilot } ) : publisher
+
+} );
 
 }
-
-$_director ( play ) { return this .$_content }
 
 $delete ( play ) {
 
@@ -60,33 +66,6 @@ $_order ( play ) {
 const { location } = play ( this .stamp );
 
 return parseInt ( location [ location .length - 1 ] );
-
-}
-
-$_complete ( play, input ) {
-
-const { scenario, pilot } = play ( this .stamp );
-
-return [ pilot ( Symbol .for ( 'directions' ), scenario, input ), input ];
-
-}
-
-$_prompt ( play ) {
-
-return `${ play ( this .stamp ) .location .join ( '.' ) }: `
-
-}
-
-[ '$.' ] ( play ) { return play }
-
-[ '$..' ] ( play, ... order ) {
-
-const { stamp } = this;
-const { player } = play ( stamp );
-
-play = player ( stamp ) .scenario instanceof Note ? player : play;
-
-return order .length ? play ( ... order ) : play;
 
 }
 

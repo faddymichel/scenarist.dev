@@ -1,12 +1,69 @@
-#!/usr/bin/env node
+import Note from 'scenarist.dev/nota/note';
 
-import Scenarist from 'scenarist.dev';
-import Shell from 'scenarist.dev/shell';
-import Nota from './scenario/index.js';
+export default class Nota extends Note {
 
-const stamp = Symbol .for ( 'nota/stamp' );
-const nota = new Nota ( { stamp } );
-const shell = new Shell ( { stamp, scenario: nota } );
-const play = Scenarist ( shell, { stamp } );
+constructor ( { stamp, publisher, title } ) {
 
-play ( Symbol .for ( 'interact' ) );
+super ( { stamp, publisher, content: [] } );
+
+this .title = title || 'Nota';
+
+}
+
+$title ( play, ... title ) {
+
+this .title = title .join ( ' ' );
+
+return play ();
+
+}
+
+$nota ( play, ... title ) {
+
+return play ( Symbol .for ( 'note' ), new Nota ( {
+
+stamp: this .stamp,
+publisher: this .publisher,
+pilot: play ( '.' ),
+title: title .join ( '' ) || 'Nota'
+
+} ) );
+
+}
+
+$text ( play, ... content ) {
+
+if ( ! ( content = content .join ( ' ' ) ) ?.length )
+return false;
+
+return play ( Symbol .for ( 'note' ), new Note ( {
+
+stamp: this .stamp,
+publisher: this .$_director,
+content
+
+} ) );
+
+}
+
+$_note ( play, note ) {
+
+const nota = this;
+const { $_content: notebook } = nota;
+const order = notebook .push ( note );
+
+Object .defineProperty ( nota, '$' + order, {
+
+get: () => notebook [ order - 1 ],
+configurable: true,
+enumerable: true
+
+} );
+
+return order;
+
+}
+
+get $size () { return this .$_content .length }
+
+};

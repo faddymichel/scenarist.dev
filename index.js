@@ -19,8 +19,8 @@ play,
 stamp: order [ 1 ] ?.stamp,
 scenario: order [ 0 ],
 location: [],
-player: order [ 1 ] ?.[ $ .player ],
-pilot: order [ 1 ] ?.[ $ .pilot ] || play
+player: order [ 1 ] ?.player,
+pilot: order [ 1 ] ?.pilot || play
 
 } );
 
@@ -86,8 +86,8 @@ if ( ! plot .get ( conflict ) )
 plot .set ( conflict, Scenarist ( conflict, {
 
 stamp,
-[ $ .player ]: play,
-[ $ .pilot ]: pilot
+player: play,
+pilot
 
 } ) );
 
@@ -112,10 +112,6 @@ const $ = {
 
 stamp: Symbol ( 'scenarist/stamp' ),
 play: Symbol ( 'scenarist/$play' ),
-order: Symbol ( 'scenarist/$order' ),
-plot: Symbol ( 'scenarist/$plot' ),
-location: Symbol ( 'scenarist/$location' ),
-player: Symbol ( 'scenarist/player' ),
-pilot: Symbol ( 'scenarist/pilot' )
+location: Symbol ( 'scenarist/$location' )
 
 };
