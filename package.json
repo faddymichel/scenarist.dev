@@ -1,6 +1,6 @@
 {
   "name": "scenarist.dev",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "To Handle Multiple Events Using a Single Function",
   "type": "module",
   "exports": {
