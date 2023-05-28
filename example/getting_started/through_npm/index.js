@@ -7,6 +7,8 @@ const scenario = {
         console.log("hello " + this.name)
     },
     name: "Hamada",
+    $_x: 3,
+
 }
 const play = Scenarist(scenario)
-play("greet")
+console.log(play(Symbol.for("x")))
