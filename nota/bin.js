@@ -5,10 +5,13 @@ import Nota from 'scenarist.dev/nota';
 import Shell from 'scenarist.dev/nota/shell';
 
 const stamp = Symbol ( 'scenarist.dev/nota' );
-
-Scenarist ( new Nota ( {
+const play = Scenarist ( new Nota ( {
 
 stamp,
 publisher: new Shell ( { stamp } )
 
-} ), { stamp } ) ( Symbol .for ( 'interact' ) );
+} ), { stamp } );
+
+play ( Symbol .for ( 'publish' ) );
+
+play ( Symbol .for ( 'interact' ) );

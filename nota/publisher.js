@@ -1,23 +1,14 @@
-export default class Publisher {
+import Scenarist from 'scenarist.dev';
+import Nota from 'scenarist.dev/nota';
 
-#stamp
+export default function publish ( { stamp, pilot, directory } ) {
 
-constructor ( stamp ) { this .#stamp = stamp }
+pilot = pilot || Scenarist ( new Nota ( { stamp } ), { stamp } );
 
-$markdown ( play ) {
+const { scenario: nota } = pilot ( stamp );
 
-const publisher = this;
-const stamp = publisher .#stamp;
-const { player } = play ( stamp );
-const { $_scenario: note } = player ( stamp );
-const { $_content: content } = note;
+nota .$_director = Scenarist ( directory, { stamp, pilot } );
 
-if ( content instanceof Array )
-for  ( const index in content )
-player ( index + 1, 'publish' );
-
-return publisher .publish ( note );
-
-}
+return pilot;
 
 };

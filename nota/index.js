@@ -24,7 +24,7 @@ return play ( Symbol .for ( 'note' ), new Nota ( {
 
 stamp: this .stamp,
 publisher: this .publisher,
-pilot: play ( '.' ),
+pilot: play, // ( '.' ),
 title: title .join ( '' ) || 'Nota'
 
 } ) );
@@ -59,6 +59,8 @@ configurable: true,
 enumerable: true
 
 } );
+
+play ( order, Symbol .for ( 'publish' ) );
 
 return order;
 

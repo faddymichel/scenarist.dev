@@ -1,3 +1,5 @@
+import Scenarist from 'scenarist.dev';
+
 export default class Note {
 
 constructor ( { stamp, content, pilot, publisher } ) {
@@ -8,10 +10,24 @@ Object .assign ( note, {
 
 stamp: stamp,
 $_content: content,
-publisher,
-$_director: typeof pilot === 'function' ? Scenarist ( publisher, { stamp, pilot } ) : publisher
+publisher
+//$_director: typeof pilot === 'function' ? Scenarist ( publisher, { stamp, pilot } ) : publisher
 
 } );
+
+}
+
+$_publish ( play ) {
+
+const note = this;
+const publisherPlayer = Scenarist ( note .publisher, {
+
+stamp: note .stamp,
+pilot: play
+
+} );
+
+note .$_director = ( play, ... order ) => publisherPlayer ( ... order );
 
 }
 

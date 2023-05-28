@@ -11,7 +11,7 @@ Object .assign ( this, { stamp } );
 
 [ '$.' ] ( play, ... order ) {
 
-const { player: notePlayer } = play ( this .stamp );
+const { pilot: notePlayer } = play ( this .stamp );
 
 return order .length ? notePlayer ( ... order ) : notePlayer;
 
@@ -20,10 +20,20 @@ return order .length ? notePlayer ( ... order ) : notePlayer;
 [ '$..' ] ( play, ... order ) {
 
 const { stamp } = this;
-const { player: notePlayer } = play ( stamp );
+const { pilot: notePlayer } = play ( stamp );
 const { player: notaPlayer } = notePlayer ( stamp );
 
 return ( notaPlayer || notePlayer ) ( '.', ... order );
+
+}
+
+[ '$~' ] ( play, ... order ) {
+
+const { stamp } = this;
+const { pilot: notePlayer } = play ( stamp );
+const { pilot } = notePlayer ( stamp );
+
+return pilot ( '.', ... order );
 
 }
 
@@ -47,9 +57,8 @@ if ( title ?.length )
 text += `${ '#' .repeat ( location .length + 1 ) } ${ location .join ( '.' ) }${ ( location .length ? ' ' : '' ) + title }`;
 
 if ( notebook .length )
-text += `${ text .length ? '\n\n' : '' }${ notebook .map ( ( note, index ) => play ( '.', index + 1, Symbol .for ( 'director' ) ) )
-.join ( '\n' ) }
-`;
+text += `${ text .length ? '\n' : '' }${ notebook .map ( ( note, index ) => play ( '.', index + 1, Symbol .for ( 'director' ) ) )
+.join ( '\n' ) }`;
 
 return text;
 

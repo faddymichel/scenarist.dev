@@ -25,9 +25,9 @@ $_interact ( play ) {
 
 const shell = this;
 const { stamp, input, output, error } = shell;
-const { player } = play ( stamp );
+const { pilot } = play ( stamp );
 
-shell .play = player;
+shell .play = pilot;
 shell .page = createInterface ( {
 
 input, output,
@@ -65,7 +65,6 @@ $_online ( play, line ) {
 
 const shell = this;
 const { console } = shell;
-const { player } = play ( shell .stamp );
 const resolution = shell .play ( ... ( line = line .trim () ) ?.length ? line .split ( /\s+/ ) : [] );
 
 if ( [ 'string', 'number', 'boolean' ] .includes ( typeof resolution ) )
@@ -145,7 +144,7 @@ return directions ( Symbol .for ( 'complete' ), input );
 $_directions ( play, input, secret = {} ) {
 
 const shell =this;
-const scenario = secret [ shell .#scenario ] === undefined ? play ( shell .stamp ) .player ( shell .stamp ) .scenario : secret [ shell .#scenario ];
+const scenario = secret [ shell .#scenario ] === undefined ? play ( shell .stamp ) .pilot ( shell .stamp ) .scenario : secret [ shell .#scenario ];
 
 if ( ! scenario )
 return [];
@@ -170,9 +169,9 @@ return [
 $_prompt ( play ) {
 
 const shell = this;
-const { player } = play ( shell .stamp );
+const { pilot } = play ( shell .stamp );
 
-shell .page .setPrompt ( `${ player ( this .stamp ) .location .join ( '.' ) }: ` );
+shell .page .setPrompt ( `${ pilot ( this .stamp ) .location .join ( '.' ) }: ` );
 shell .page .prompt ();
 
 }
