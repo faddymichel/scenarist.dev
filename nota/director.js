@@ -46,17 +46,16 @@ if ( direction ?.length )
 return;
 
 const { scenario: nota, location } = play ( '.', this .stamp );
-
-if ( ! ( nota instanceof Nota ) )
-return nota .$_content;
-
-const { $_content: notebook, title } = nota;
+const { $_content: notebook, $_title: title } = nota;
 let text = '';
 
 if ( title ?.length )
 text += `${ '#' .repeat ( location .length + 1 ) } ${ location .join ( '.' ) }${ ( location .length ? ' ' : '' ) + title }`;
 
-if ( notebook .length )
+if ( [ 'string', 'number' ] .includes ( typeof notebook ) )
+text += `${ text .length ? '\n' : '' }${ notebook }`;
+
+else if ( notebook instanceof Array && notebook .length )
 text += `${ text .length ? '\n' : '' }${ notebook .map ( ( note, index ) => play ( '.', index + 1, Symbol .for ( 'director' ) ) )
 .join ( '\n' ) }`;
 

@@ -5,7 +5,7 @@ if ( ! this ?.[ $ .play ] )
 if ( [ 'object', 'function' ] .includes ( typeof order [ 0 ] ) ) {
 
 const setting = {};
-const play = Scenarist .bind ( {
+let play = Scenarist .bind ( {
 
 [ $ .play ]: true,
 plot: new Map (),
@@ -18,20 +18,25 @@ Object .assign ( setting, {
 play,
 stamp: order [ 1 ] ?.stamp,
 scenario: order [ 0 ],
-location: [],
 player: order [ 1 ] ?.player,
-pilot: order [ 1 ] ?.pilot || play
+pilot: order [ 1 ] ?.pilot || play,
+location: order [ 1 ] ?.[ $ .location ] || []
 
 } );
 
 const { location } = setting;
 
-return Object .defineProperty ( play, 'name', {
+play = Object .defineProperty ( play, 'name', {
 
 value: 
-`play${ location .length ? ( ':' + location .map ( direction => direction .toString () ) .join ( '.' ) ) : '' }`
+`play${ location .length ? ( ':' + location .map ( direction => ( typeof direction ?.toString === 'function' ? direction : new String ( direction ) ) .toString () ) .join ( '.' ) ) : '' }`
 
 } );
+
+if ( setting .scenario .$_producer !== undefined )
+play ( Symbol .for ( 'producer' ) );
+
+return play;
 
 }
 
@@ -65,8 +70,12 @@ order .shift ();
 
 }
 
-else if ( typeof scenario .$_director !== undefined )
+else if ( typeof scenario .$_director !== undefined ) {
+
 conflict = scenario .$_director;
+direction = Symbol .for ( 'director' );
+
+}
 
 else
 throw Object .assign ( Error ( `Unknown direction: [ ${ [ ... location, direction ] .join ( ' ' ) } ]` ), {
@@ -87,18 +96,12 @@ plot .set ( conflict, Scenarist ( conflict, {
 
 stamp,
 player: play,
-pilot
+pilot,
+[ $ .location ]: [ ... location, direction ]
 
 } ) );
 
 play = plot .get ( conflict );
-
-if ( typeof conflict === 'object' ) {
-
-setting = play ( stamp );
-setting .location = [ ... location, direction ];
-
-}
 
 return play ( ... order );
 

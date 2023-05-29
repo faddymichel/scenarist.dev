@@ -1,18 +1,23 @@
-import Note from 'scenarist.dev/nota/note';
+import Scenarist from 'scenarist.dev';
 
-export default class Nota extends Note {
+export default class Nota {
 
-constructor ( { stamp, publisher, title } ) {
+constructor ( { title, content, stamp, publisher } ) {
 
-super ( { stamp, publisher, content: [] } );
+Object .assign ( this, {
 
-this .title = title || 'Nota';
+stamp,
+$_title: typeof $_title === 'string' ? title : '',
+$_content: content,
+publisher
+
+} );
 
 }
 
 $title ( play, ... title ) {
 
-this .title = title .join ( ' ' );
+this .$_title = title .join ( ' ' ) .trim ();
 
 return play ();
 
@@ -20,29 +25,16 @@ return play ();
 
 $nota ( play, ... title ) {
 
-return play ( Symbol .for ( 'note' ), new Nota ( {
-
-stamp: this .stamp,
-publisher: this .publisher,
-pilot: play, // ( '.' ),
-title: title .join ( '' ) || 'Nota'
-
-} ) );
+return play ( Symbol .for ( 'note' ), { content: [] } );
 
 }
 
 $text ( play, ... content ) {
 
-if ( ! ( content = content .join ( ' ' ) ) ?.length )
+if ( ! ( content = content .join ( ' ' ) .trim () ) ?.length )
 return false;
 
-return play ( Symbol .for ( 'note' ), new Note ( {
-
-stamp: this .stamp,
-publisher: this .$_director,
-content
-
-} ) );
+return play ( Symbol .for ( 'note' ), { content } );
 
 }
 
@@ -50,7 +42,18 @@ $_note ( play, note ) {
 
 const nota = this;
 const { $_content: notebook } = nota;
-const order = notebook .push ( note );
+
+if ( ! ( notebook instanceof Array ) )
+return false;
+
+const child = new Nota ( Object .assign ( note, {
+
+stamp: nota .stamp,
+publisher: nota .publisher
+
+} ) );
+
+const order = notebook .push ( child );
 
 Object .defineProperty ( nota, '$' + order, {
 
@@ -60,12 +63,61 @@ enumerable: true
 
 } );
 
-play ( order, Symbol .for ( 'publish' ) );
+// play ( order, Symbol .for ( 'publish' ) );
 
 return order;
 
 }
 
+$_producer ( play ) {
+
+const nota = this;
+const directory = Scenarist ( nota .publisher, {
+
+stamp: nota .stamp,
+pilot: play
+
+} );
+
+nota .$_director = ( play, ... order ) => directory ( ... order );
+
+if ( ! ( nota .$_content instanceof Array ) )
+return;
+
+const { $_content: notebook } = nota;
+
+nota .$_content = [];
+
+if ( notebook .length )
+for ( const content of notebook )
+play ( Symbol .for ( 'note' ), { content } );
+
+}
+
 get $size () { return this .$_content .length }
+
+$delete ( play ) {
+
+const nota = this;
+const { stamp } = nota;
+const { location, player } = play ( stamp );
+const { scenario: { $_content: notebook } } = player ( stamp );
+const order = play ( Symbol .for ( 'order' ) );
+
+notebook .splice ( order - 1, 1 );
+
+delete notebook [ '$' + ( notebook .length + 1 ) ];
+
+return true;
+
+}
+
+$_order ( play ) {
+
+const { location } = play ( this .stamp );
+
+return parseInt ( location [ location .length - 1 ] );
+
+}
 
 };

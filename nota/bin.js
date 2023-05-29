@@ -7,11 +7,13 @@ import Shell from 'scenarist.dev/nota/shell';
 const stamp = Symbol ( 'scenarist.dev/nota' );
 const play = Scenarist ( new Nota ( {
 
+content: [
+
+'Yallah?',
+'Salah Abdallah!'
+
+],
 stamp,
 publisher: new Shell ( { stamp } )
 
 } ), { stamp } );
-
-play ( Symbol .for ( 'publish' ) );
-
-play ( Symbol .for ( 'interact' ) );

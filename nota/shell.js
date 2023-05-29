@@ -21,7 +21,7 @@ error: error instanceof Writable ? medium .output : process .stderr
 
 }
 
-$_interact ( play ) {
+$_producer ( play ) {
 
 const shell = this;
 const { stamp, input, output, error } = shell;
@@ -58,6 +58,8 @@ shell .page .on ( event, ( ... order ) => shell .play ( Symbol .for ( 'on' + eve
 shell .console = new Console ( output, error );
 
 play ( Symbol .for ( 'prompt' ) );
+
+shell .$_producer = false;
 
 }
 
