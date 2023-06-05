@@ -25,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/faddymichel/scenarist/issues"
   },
-  "homepage": "https://github.com/faddymichel/scenarist#readme"
+  "homepage": "https://github.com/faddymichel/scenarist#readme",
+  "dependencies": {
+    "js-tokens": "^8.0.1"
+  }
 }
