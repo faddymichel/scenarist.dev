@@ -1,17 +1,42 @@
 import Scenarist from 'scenarist.dev';
+import Directory from 'scenarist.dev/nota/directory';
+import Navigation from './navigation.js';
 
 export default class Nota {
 
-constructor ( { title, content, stamp, publisher } ) {
+constructor ( { content, title, directory } ) {
 
-Object .assign ( this, {
+Object .assign ( this, { content, title, directory } );
 
-stamp,
-$_title: typeof $_title === 'string' ? title : '',
-$_content: content,
-publisher
+}
+
+$_producer ( play, { stamp } ) {
+
+const nota = this;
+const directory = Scenarist ( nota .directory, {
+
+stamp: ( nota .stamp = stamp ),
+pilot: play
 
 } );
+
+nota .$_director = ( play, ... order ) => directory ( ... order );
+
+if ( typeof nota .content !== 'object' || ! nota .content )
+return nota .$_content = nota .content;
+
+nota .$_content = [];
+
+const keys = Object .keys ( nota .content );
+
+if ( keys .length )
+for ( const key of keys )
+play ( Symbol .for ( 'note' ), { 
+
+content: nota .content [ key ],
+title: nota .content instanceof Array ? undefined : key
+
+ } );
 
 }
 
@@ -23,13 +48,13 @@ return play ();
 
 }
 
-$nota ( play, ... title ) {
+$nota ( play, title ) {
 
-return play ( Symbol .for ( 'note' ), { content: [] } );
+return play ( Symbol .for ( 'note' ), { content: [], title } );
 
 }
 
-$text ( play, ... content ) {
+$string ( play, ... content ) {
 
 if ( ! ( content = content .join ( ' ' ) .trim () ) ?.length )
 return false;
@@ -38,85 +63,63 @@ return play ( Symbol .for ( 'note' ), { content } );
 
 }
 
-$_note ( play, note ) {
+$_note ( play, { content, title, directory } ) {
 
 const nota = this;
-const { $_content: notebook } = nota;
+const { $_content: note } = nota;
 
-if ( ! ( notebook instanceof Array ) )
+if ( ! ( note instanceof Array ) )
 return false;
 
-const child = new Nota ( Object .assign ( note, {
+const { constructor: Nota } = Object .getPrototypeOf ( nota );
+const child = new Nota ( {
 
 stamp: nota .stamp,
-publisher: nota .publisher
+content,
+title,
+directory: directory || nota .directory
 
-} ) );
+} );
 
-const order = notebook .push ( child );
+const order = note .push ( child );
+
+if ( typeof title === 'string' && title .length )
+nota [ '$' + title ] = note [ order - 1 ];
 
 Object .defineProperty ( nota, '$' + order, {
 
-get: () => notebook [ order - 1 ],
+get: () => note [ order - 1 ],
 configurable: true,
 enumerable: true
 
 } );
 
-// play ( order, Symbol .for ( 'publish' ) );
-
 return order;
 
 }
 
-$_producer ( play ) {
-
-const nota = this;
-const directory = Scenarist ( nota .publisher, {
-
-stamp: nota .stamp,
-pilot: play
-
-} );
-
-nota .$_director = ( play, ... order ) => directory ( ... order );
-
-if ( ! ( nota .$_content instanceof Array ) )
-return;
-
-const { $_content: notebook } = nota;
-
-nota .$_content = [];
-
-if ( notebook .length )
-for ( const content of notebook )
-play ( Symbol .for ( 'note' ), { content } );
-
-}
-
 get $size () { return this .$_content .length }
-
-$delete ( play ) {
-
-const nota = this;
-const { stamp } = nota;
-const { location, player } = play ( stamp );
-const { scenario: { $_content: notebook } } = player ( stamp );
-const order = play ( Symbol .for ( 'order' ) );
-
-notebook .splice ( order - 1, 1 );
-
-delete notebook [ '$' + ( notebook .length + 1 ) ];
-
-return true;
-
-}
 
 $_order ( play ) {
 
 const { location } = play ( this .stamp );
 
 return parseInt ( location [ location .length - 1 ] );
+
+}
+
+static publish ( { directions, content } ) {
+
+const Nota = this;
+const stamp = Symbol ( 'scenarist.dev/nota' );
+const play = Scenarist ( new Nota ( {
+
+directory: new Navigation ( directions ),
+content
+
+} ), { stamp } );
+
+return play;
 
 }
 

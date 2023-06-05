@@ -6,8 +6,10 @@
   "exports": {
     ".": "./index.js",
     "./nota": "./nota/index.js",
-    "./nota/note": "./nota/note.js",
+    "./nota/directory": "./nota/directory.js",
     "./nota/shell": "./nota/shell.js",
+    "./nota/editor": "./nota/editor.js",
+    "./nota/export": "./nota/export.js",
     "./oscilla": "./oscilla/index.js"
   },
   "scripts": {

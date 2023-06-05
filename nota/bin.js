@@ -3,17 +3,33 @@
 import Scenarist from 'scenarist.dev';
 import Nota from 'scenarist.dev/nota';
 import Shell from 'scenarist.dev/nota/shell';
+import Composer from './composer.js';
+import Editor from './editor.js';
+import $export from './export.js';
 
-const stamp = Symbol ( 'scenarist.dev/nota' );
-const play = Scenarist ( new Nota ( {
+Nota .publish ( {
 
+directions: {
+
+$new: new Composer (),
+$edit: new Editor (),
+$export,
+$_shell ( play ) {
+
+const directory = this;
+
+directory .$_shell = new Shell ( { stamp: directory .stamp } );
+
+play ( Symbol .for ( 'shell' ) );
+
+}
+
+},
 content: [
 
 'Yallah?',
 'Salah Abdallah!'
 
-],
-stamp,
-publisher: new Shell ( { stamp } )
+]
 
-} ), { stamp } );
+} );

@@ -4,16 +4,16 @@ if ( ! this ?.[ $ .play ] )
 
 if ( [ 'object', 'function' ] .includes ( typeof order [ 0 ] ) ) {
 
-const setting = {};
+const production = {};
 let play = Scenarist .bind ( {
 
 [ $ .play ]: true,
 plot: new Map (),
-setting
+production
 
 } );
 
-Object .assign ( setting, {
+Object .assign ( production, {
 
 play,
 stamp: order [ 1 ] ?.stamp,
@@ -24,7 +24,9 @@ location: order [ 1 ] ?.[ $ .location ] || []
 
 } );
 
-const { location } = setting;
+production .setting = order [ 1 ] ?.setting || production .scenario;
+
+const { location } = production;
 
 play = Object .defineProperty ( play, 'name', {
 
@@ -33,8 +35,8 @@ value:
 
 } );
 
-if ( setting .scenario .$_producer !== undefined )
-play ( Symbol .for ( 'producer' ) );
+if ( production .scenario .$_producer !== undefined )
+play ( Symbol .for ( 'producer' ), production );
 
 return play;
 
@@ -43,16 +45,17 @@ return play;
 else
 throw TypeError ( "Scenarist: 'scenario' must be either an 'object' or 'function'." );
 
-let { setting, plot } = this;
-let { play, stamp, scenario, location, player, pilot } = setting;
+let { production, plot } = this;
+let { play, stamp, scenario, setting, location, player, pilot } = production;
 let [ direction ] = order;
 let conflict, $direction;
+let directed = true;
 
 if ( typeof scenario === 'function' )
-return scenario .call ( player ( stamp ) .scenario, player, ... order );
+return scenario .call ( setting, player, ... order );
 
 else if ( direction === stamp )
-return setting;
+return production;
 
 else if ( [ 'string', 'number' ] .includes ( typeof direction ) && direction ?.[ 0 ] !== '_' && typeof scenario ?.[ $direction = '$' + direction ] !== 'undefined' ) {
 
@@ -74,6 +77,7 @@ else if ( typeof scenario .$_director !== undefined ) {
 
 conflict = scenario .$_director;
 direction = Symbol .for ( 'director' );
+directed = true;
 
 }
 
@@ -82,7 +86,7 @@ throw Object .assign ( Error ( `Unknown direction: [ ${ [ ... location, directio
 
 direction,
 location,
-code: Symbol .for ( 'scenarist/error/unknown-direction' )
+code: Symbol .for ( 'senarist.dev/error/unknown-direction' )
 
 } );
 
@@ -97,6 +101,7 @@ plot .set ( conflict, Scenarist ( conflict, {
 stamp,
 player: play,
 pilot,
+setting: directed ? setting : undefined,
 [ $ .location ]: [ ... location, direction ]
 
 } ) );
@@ -113,8 +118,8 @@ return conflict;
 
 const $ = {
 
-stamp: Symbol ( 'scenarist/stamp' ),
-play: Symbol ( 'scenarist/$play' ),
-location: Symbol ( 'scenarist/$location' )
+stamp: Symbol ( 'senarist.dev/stamp' ),
+play: Symbol ( 'senarist.dev/$play' ),
+location: Symbol ( 'senarist.dev/$location' )
 
 };
