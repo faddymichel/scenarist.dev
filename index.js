@@ -16,7 +16,7 @@ production
 Object .assign ( production, {
 
 play,
-stamp: order [ 1 ] ?.stamp,
+stamp: order [ 1 ] ?.stamp || Symbol .for ( 'scenarist.dev/stamp' ),
 scenario: order [ 0 ],
 player: order [ 1 ] ?.player,
 pilot: order [ 1 ] ?.pilot || play,
@@ -24,16 +24,7 @@ location: order [ 1 ] ?.[ $ .location ] || []
 
 } );
 
-production .setting = order [ 1 ] ?.setting || production .scenario;
-
-const { location } = production;
-
-play = Object .defineProperty ( play, 'name', {
-
-value: 
-`play${ location .length ? ( ':' + location .map ( direction => ( typeof direction ?.toString === 'function' ? direction : new String ( direction ) ) .toString () ) .join ( '.' ) ) : '' }`
-
-} );
+play = Object .defineProperty ( play, 'name', { value: 'scenarist.dev/play' } );
 
 if ( production .scenario .$_producer !== undefined )
 play ( Symbol .for ( 'producer' ), production );
@@ -46,18 +37,26 @@ else
 throw TypeError ( "Scenarist: 'scenario' must be either an 'object' or 'function'." );
 
 let { production, plot } = this;
-let { play, stamp, scenario, setting, location, player, pilot } = production;
+let { play, stamp, scenario, location, player, pilot } = production;
 let [ direction ] = order;
 let conflict, $direction;
-let directed = true;
 
-if ( typeof scenario === 'function' )
-return scenario .call ( setting, player, ... order );
+if ( typeof scenario === 'function' ) {
+
+return scenario .call ( player ( stamp ) .scenario, player, ... order );
+
+}
 
 else if ( direction === stamp )
 return production;
 
-else if ( [ 'string', 'number' ] .includes ( typeof direction ) && direction ?.[ 0 ] !== '_' && typeof scenario ?.[ $direction = '$' + direction ] !== 'undefined' ) {
+else if (
+
+[ 'string', 'number' ] .includes ( typeof direction )
+&& direction ?.[ 0 ] !== '_'
+&& typeof scenario ?.[ $direction = '$' + direction ] !== 'undefined'
+
+) {
 
 conflict = scenario [ $direction ];
 
@@ -65,7 +64,13 @@ order .shift ();
 
 }
 
-else if ( typeof direction === 'symbol' && ( $direction = Symbol .keyFor ( direction ) ) && typeof scenario ?.[ $direction = '$_' + $direction ] !== 'undefined' ) {
+else if (
+
+typeof direction === 'symbol'
+&& ( $direction = Symbol .keyFor ( direction ) )
+&& typeof scenario ?.[ $direction = '$_' + $direction ] !== 'undefined'
+
+) {
 
 conflict = scenario [ $direction ];
 
@@ -77,7 +82,6 @@ else if ( typeof scenario .$_director !== undefined ) {
 
 conflict = scenario .$_director;
 direction = Symbol .for ( 'director' );
-directed = true;
 
 }
 
@@ -95,18 +99,24 @@ switch ( typeof conflict ) {
 case 'object':
 case 'function':
 
+
+if ( ! conflict )
+return;
+
 if ( ! plot .get ( conflict ) )
 plot .set ( conflict, Scenarist ( conflict, {
 
 stamp,
 player: play,
 pilot,
-setting: directed ? setting : undefined,
 [ $ .location ]: [ ... location, direction ]
 
 } ) );
 
 play = plot .get ( conflict );
+
+if ( typeof conflict === 'object' )
+play ( stamp ) .location = [ ... location, direction ];
 
 return play ( ... order );
 
