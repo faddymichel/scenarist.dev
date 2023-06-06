@@ -48,24 +48,11 @@ return play ();
 
 }
 
-$nota ( play, title ) {
-
-return play ( Symbol .for ( 'note' ), { content: [], title } );
-
-}
-
-$string ( play, ... content ) {
-
-if ( ! ( content = content .join ( ' ' ) .trim () ) ?.length )
-return false;
-
-return play ( Symbol .for ( 'note' ), { content } );
-
-}
+get $size () { return this .$_content .length }
 
 $_note ( play, { content, title, directory } ) {
 
-const nota = this;
+const { scenario: nota } = play ( this .stamp );
 const { $_content: note } = nota;
 
 if ( ! ( note instanceof Array ) )
@@ -98,26 +85,11 @@ return order;
 
 }
 
-get $size () { return this .$_content .length }
-
-$_order ( play ) {
-
-const { location } = play ( this .stamp );
-
-return parseInt ( location [ location .length - 1 ] );
-
-}
-
-static publish ( { directions, content } ) {
+static publish ( { directory, content } ) {
 
 const Nota = this;
 const stamp = Symbol ( 'scenarist.dev/nota' );
-const play = Scenarist ( new Nota ( {
-
-directory: new Navigation ( directions ),
-content
-
-} ), { stamp } );
+const play = Scenarist ( new Nota ( { directory, content } ), { stamp } );
 
 return play;
 

@@ -7,6 +7,7 @@
     ".": "./index.js",
     "./nota": "./nota/index.js",
     "./nota/directory": "./nota/directory.js",
+    "./nota/navigation": "./nota/navigation.js",
     "./nota/shell": "./nota/shell.js",
     "./nota/editor": "./nota/editor.js",
     "./nota/export": "./nota/export.js",

@@ -9,22 +9,17 @@ import $export from './export.js';
 
 Nota .publish ( {
 
+directory: new Shell ( {
+
 directions: {
 
 $new: new Composer (),
 $edit: new Editor (),
-$export,
-$_shell ( play ) {
-
-const directory = this;
-
-directory .$_shell = new Shell ( { stamp: directory .stamp } );
-
-play ( Symbol .for ( 'shell' ) );
+$export
 
 }
 
-},
+} ),
 content: [
 
 'Yallah?',

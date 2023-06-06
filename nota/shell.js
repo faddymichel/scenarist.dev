@@ -1,29 +1,33 @@
+import Navigation from 'scenarist.dev/nota/navigation';
 import { createInterface, Interface } from 'readline';
 import { Console } from 'console';
 import { Readable, Writable } from 'stream';
 
-export default class Shell {
+export default class Shell extends Navigation {
 
-constructor ( { stamp, input, output, error } ) {
+constructor ( medium = {} ) {
+
+super ( medium );
 
 Object .assign ( this, {
 
-stamp,
-input: input instanceof Readable ? medium .input : process .stdin,
-output: output instanceof Writable ? medium .output : process .stdout,
-error: error instanceof Writable ? medium .output : process .stderr
+input: medium ?.input instanceof Readable ? medium .input : process .stdin,
+output: medium ?.output instanceof Writable ? medium .output : process .stdout,
+error: medium ?.error instanceof Writable ? medium .output : process .stderr
 
 } );
 
 }
 
-$_producer ( play ) {
+$_producer ( play, production ) {
+
+super .$_producer ( play, production );
 
 const shell = this;
-const { stamp, input, output, error } = shell;
-const { pilot } = play ( stamp );
+const { input, output, error } = shell;
+const { pilot: notaplay } = play ( shell .stamp );
 
-shell .play = pilot;
+shell .play = notaplay;
 shell .page = createInterface ( {
 
 input, output,
@@ -49,7 +53,7 @@ return [];
 } );
 
 for ( const event of [ 'line', 'SIGINT', 'error', 'close' ] )
-shell .page .on ( event, ( ... order ) => shell .play ( Symbol .for ( 'shell' ), Symbol .for ( 'on' + event ), ... order ) );
+shell .page .on ( event, ( ... order ) => shell .play ( Symbol .for ( 'on' + event ), ... order ) );
 
 shell .console = new Console ( output, error );
 
@@ -69,9 +73,9 @@ if ( [ 'string', 'number', 'boolean' ] .includes ( typeof resolution ) )
 console .log ( resolution );
 
 else if ( typeof resolution === 'function' )
-shell .play = play = resolution;
+shell .play = resolution;
 
-shell .play ( Symbol .for ( 'shell' ), Symbol .for ( 'prompt' ) );
+shell .play ( Symbol .for ( 'prompt' ) );
 
 }
 
