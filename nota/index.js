@@ -85,11 +85,16 @@ return order;
 
 }
 
-static publish ( { directory, content } ) {
+$_prompt ( play ) { return play ( this .stamp ) .location .join ( '.' ) }
+
+static publish ( { medium, directory, content } ) {
 
 const Nota = this;
-const stamp = Symbol ( 'scenarist.dev/nota' );
-const play = Scenarist ( new Nota ( { directory, content } ), { stamp } );
+const play = Scenarist ( new Nota ( { directory, content } ) );
+
+medium .play = play;
+
+Scenarist ( medium );
 
 return play;
 

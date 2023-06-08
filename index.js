@@ -24,7 +24,12 @@ location: order [ 1 ] ?.[ $ .location ] || []
 
 } );
 
-play = Object .defineProperty ( play, 'name', { value: 'scenarist.dev/play' } );
+play = Object .defineProperties ( play, {
+
+name: { value: 'scenarist.dev/play' },
+[ Symbol .for ( 'playable' ) ]: { value: true }
+
+} );
 
 if ( production .scenario .$_producer !== undefined )
 play ( Symbol .for ( 'producer' ), production );
@@ -41,14 +46,14 @@ let { play, stamp, scenario, location, player, pilot } = production;
 let [ direction ] = order;
 let conflict, $direction;
 
-if ( typeof scenario === 'function' ) {
+if ( direction === stamp )
+return production;
+
+else if ( typeof scenario === 'function' ) {
 
 return scenario .call ( player ( stamp ) .scenario, player, ... order );
 
 }
-
-else if ( direction === stamp )
-return production;
 
 else if (
 

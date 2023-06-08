@@ -1,16 +1,14 @@
-import Navigation from 'scenarist.dev/nota/navigation';
 import { createInterface, Interface } from 'readline';
 import { Console } from 'console';
 import { Readable, Writable } from 'stream';
 
-export default class Shell extends Navigation {
+export default class Shell {
 
 constructor ( medium = {} ) {
 
-super ( medium );
-
 Object .assign ( this, {
 
+play: medium ?.play,
 input: medium ?.input instanceof Readable ? medium .input : process .stdin,
 output: medium ?.output instanceof Writable ? medium .output : process .stdout,
 error: medium ?.error instanceof Writable ? medium .output : process .stderr
@@ -19,15 +17,12 @@ error: medium ?.error instanceof Writable ? medium .output : process .stderr
 
 }
 
-$_producer ( play, production ) {
-
-super .$_producer ( play, production );
+$_producer ( play, { stamp } ) {
 
 const shell = this;
 const { input, output, error } = shell;
-const { pilot: notaplay } = play ( shell .stamp );
 
-shell .play = notaplay;
+shell .stamp = stamp;
 shell .page = createInterface ( {
 
 input, output,
@@ -53,13 +48,11 @@ return [];
 } );
 
 for ( const event of [ 'line', 'SIGINT', 'error', 'close' ] )
-shell .page .on ( event, ( ... order ) => shell .play ( Symbol .for ( 'on' + event ), ... order ) );
+shell .page .on ( event, ( ... order ) => play ( Symbol .for ( 'on' + event ), ... order ) );
 
 shell .console = new Console ( output, error );
 
 play ( Symbol .for ( 'prompt' ) );
-
-shell .$_producer = false;
 
 }
 
@@ -75,7 +68,7 @@ console .log ( resolution );
 else if ( typeof resolution === 'function' )
 shell .play = resolution;
 
-shell .play ( Symbol .for ( 'prompt' ) );
+play ( Symbol .for ( 'prompt' ) );
 
 }
 
@@ -129,9 +122,8 @@ play ( Symbol .for ( 'prompt' ) );
 $_prompt ( play ) {
 
 const shell = this;
-const { pilot } = play ( shell .stamp );
 
-shell .page .setPrompt ( `${ pilot ( this .stamp ) .location .join ( '.' ) }: ` );
+shell .page .setPrompt ( shell .play ( Symbol .for ( 'prompt' ) ) + ': ' );
 shell .page .prompt ();
 
 }

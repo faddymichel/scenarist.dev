@@ -2,10 +2,9 @@ export default class Directory {
 
 list = []
 
-constructor ( medium ) {
+constructor ( directions ) {
 
 const directory = this;
-const directions = medium ?.directions;
 
 if ( typeof directions === 'object' )
 Object .keys ( directions )
@@ -65,11 +64,15 @@ $_complete ( play, ... order ) {
 
 const directory = this;
 const { pilot: notaplay, player } = play ( directory .stamp );
+const { scenario: nota } = notaplay ( directory .stamp );
+
+if ( typeof nota === 'function' && nota [ Symbol .for ( 'playable' ) ] !== true )
+return [];
+
+if ( order .length > 1 )
+return notaplay ( order .shift (), Symbol .for ( 'complete' ), ... order );
+
 const input = order .pop ();
-
-if ( order .length )
-return notaplay ( ... order, Symbol .for ( 'complete' ), input );
-
 const filtered = {};
 const directions = [
 
@@ -83,11 +86,7 @@ scenario: directory
 
 ];
 
-if ( directions instanceof Array )
 return [ directions, input ];
-
-if  ( typeof directions === 'function' )
-return directions ( Symbol .for ( 'complete' ), input );
 
 }
 
@@ -137,9 +136,16 @@ $_director ( play, direction, ... order ) {
 
 const { pilot: notaplay } = play ( this .stamp );
 
-if ( ! isNaN ( parseInt ( direction ) ) && direction .includes ( '.' ) )
-return notaplay ( '.', ... direction .split ( '.' ), ... order );
+if ( ! isNaN ( parseInt ( direction ) ) && direction .includes ( '.' ) ) {
 
+direction = direction .split ( /\.+/ );
+
+if ( direction [ direction .length - 1 ] === '' )
+direction .pop ();
+
+return notaplay ( ... direction, ... order );
+
+}
 if ( direction ?.length )
 return;
 
