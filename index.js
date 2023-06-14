@@ -104,9 +104,11 @@ switch ( typeof conflict ) {
 case 'object':
 case 'function':
 
+if ( ! conflict ) {
 
-if ( ! conflict )
 return;
+
+}
 
 if ( ! plot .get ( conflict ) )
 plot .set ( conflict, Scenarist ( conflict, {

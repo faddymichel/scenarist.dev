@@ -8,21 +8,33 @@ import Composer from './composer.js';
 import Editor from './editor.js';
 import $export from './export.js';
 
-Nota .publish ( {
+const $ = Symbol .for;
+const play = Nota .publish ( {
 
 medium: new Shell,
-directory: new Navigation ( {
-
-$new: new Composer (),
-$edit: new Editor (),
-$export
-
-} ),
+directory: new Navigation (),
 content: [
+
+[
 
 'Yallah?',
 'Salah Abdallah!'
 
+],
+[
+
+'koko wawa'
+
 ]
+
+]
+
+} );
+
+play ( $ ( 'extension' ), {
+
+$new: new Composer (),
+$edit: new Editor (),
+$export
 
 } );

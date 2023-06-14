@@ -2,6 +2,8 @@ import Scenarist from 'scenarist.dev';
 import Directory from 'scenarist.dev/nota/directory';
 import Navigation from './navigation.js';
 
+const $ = Symbol .for;
+
 export default class Nota {
 
 constructor ( { content, title, directory } ) {
@@ -22,6 +24,14 @@ pilot: play
 
 nota .$_director = ( play, ... order ) => directory ( ... order );
 
+play ( $ ( 'structure' ) );
+
+}
+
+$_structure ( play ) {
+
+const nota = this;
+
 if ( typeof nota .content !== 'object' || ! nota .content )
 return nota .$_content = nota .content;
 
@@ -31,20 +41,12 @@ const keys = Object .keys ( nota .content );
 
 if ( keys .length )
 for ( const key of keys )
-play ( Symbol .for ( 'note' ), { 
+play ( $ ( 'note' ), { 
 
 content: nota .content [ key ],
 title: nota .content instanceof Array ? undefined : key
 
  } );
-
-}
-
-$title ( play, ... title ) {
-
-this .$_title = title .join ( ' ' ) .trim ();
-
-return play ();
 
 }
 
@@ -70,9 +72,6 @@ directory: directory || nota .directory
 
 const order = note .push ( child );
 
-if ( typeof title === 'string' && title .length )
-nota [ '$' + title ] = note [ order - 1 ];
-
 Object .defineProperty ( nota, '$' + order, {
 
 get: () => note [ order - 1 ],
@@ -80,6 +79,11 @@ configurable: true,
 enumerable: true
 
 } );
+
+play ( order );
+
+if ( title instanceof Array )
+play ( order, 'edit', 'title', ... title );
 
 return order;
 

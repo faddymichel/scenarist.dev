@@ -1,64 +1,14 @@
+const $ = Symbol .for;
+
 export default class Directory {
 
 list = []
 
-constructor ( directions ) {
-
-const directory = this;
-
-if ( typeof directions === 'object' )
-Object .keys ( directions )
-.filter ( direction => direction .startsWith ( '$' ) )
-.forEach ( direction => {
-
-directory [ direction ] = directions [ direction ];
-
-directory .list .push ( direction );
-
-} );
-
-}
-
 $_producer ( play, { stamp } ) {
 
-const directory = this;
-
-Object .defineProperty ( directory, 'stamp', { value: stamp } );
-
-for ( const direction of directory .list )
-play ( direction .startsWith ( '$_' ) ? Symbol .for ( direction .slice ( 2 ) ) : direction .slice ( 1 ) )
+Object .defineProperty ( this, 'stamp', { value: stamp } );
 
 }
-
-/*
-[ '$.' ] ( play, ... order ) {
-
-const { pilot: notaplay } = play ( this .stamp );
-
-return order .length ? notaplay ( ... order ) : notaplay;
-
-}
-
-[ '$..' ] ( play, ... order ) {
-
-const { stamp } = this;
-const { pilot: notaplay } = play ( stamp );
-const { player: notaPlayer } = notaplay ( stamp );
-
-return ( notaPlayer || notaplay ) ( '.', ... order );
-
-}
-
-[ '$~' ] ( play, ... order ) {
-
-const { stamp } = this;
-const { pilot: notaplay } = play ( stamp );
-const { pilot } = notaplay ( stamp );
-
-return pilot ( '.', ... order );
-
-}
-*/
 
 $_complete ( play, ... order ) {
 
@@ -66,23 +16,23 @@ const directory = this;
 const { pilot: notaplay, player } = play ( directory .stamp );
 const { scenario: nota } = notaplay ( directory .stamp );
 
-if ( typeof nota === 'function' && nota [ Symbol .for ( 'playable' ) ] !== true )
+if ( typeof nota === 'function' && nota [ $ ( 'playable' ) ] !== true )
 return [];
 
-if ( order .length > 1 )
-return notaplay ( order .shift (), Symbol .for ( 'complete' ), ... order );
+if ( ( typeof order [ 0 ] === 'string' && ! isNaN ( parseInt ( order [ 0 ] ) ) && order [ 0 ] .includes ( '.' ) ) || order .length > 1 )
+return notaplay ( order .shift (), $ ( 'complete' ), ... order );
 
-const input = order .pop ();
+const input = order .pop () || '';
 const filtered = {};
 const directions = [
 
-... ( ! player ? play ( Symbol .for ( 'directions' ), { input, filtered } ) : [] ),
-... ( play ( Symbol .for ( 'directions' ), {
+... ( play ( $ ( 'directions' ), {
 
 input, filtered,
 scenario: directory
 
-} ) || [] )
+} ) || [] ),
+... ( ! player ? play ( $ ( 'directions' ), { input, filtered } ) : [] ),
 
 ];
 
@@ -121,7 +71,7 @@ return filter;
 .map ( direction => direction .slice ( 1 ) )
 .filter ( direction => direction .startsWith ( input ) )
 .map ( direction => direction + ' ' ),
-... play ( Symbol .for ( 'directions' ), {
+... play ( $ ( 'directions' ), {
 
 input, filtered,
 scenario: Object .getPrototypeOf ( scenario )
@@ -136,7 +86,7 @@ $_director ( play, direction, ... order ) {
 
 const { pilot: notaplay } = play ( this .stamp );
 
-if ( ! isNaN ( parseInt ( direction ) ) && direction .includes ( '.' ) ) {
+if ( typeof direction === 'string' && ! isNaN ( parseInt ( direction ) ) && direction .includes ( '.' ) ) {
 
 direction = direction .split ( /\.+/ );
 
@@ -146,6 +96,7 @@ direction .pop ();
 return notaplay ( ... direction, ... order );
 
 }
+
 if ( direction ?.length )
 return;
 
@@ -153,9 +104,11 @@ const { scenario: nota, location } = notaplay ( this .stamp );
 const { $_content: note } = nota;
 
 if ( note instanceof Array && note .length )
-return location .join ( '.' ) + ( note .length ? '\n' : '' )
+return location .join ( '.' )
++ ( nota .title ?.length ? ` ${ nota .title }` : '' )
++ ( note .length ? '\n' : '' )
 + note
-.map ( ( note, index ) => notaplay ( index + 1, Symbol .for ( 'director' ) ) )
+.map ( ( note, index ) => notaplay ( index + 1, $ ( 'director' ) ) )
 .join ( '\n' );
 
 return `${ location .join ( '.' ) } ${ ( typeof note ?.toString === 'function' ? note : new String ( note ) ) .toString () }`;
@@ -169,6 +122,16 @@ const { pilot: notaplay } = play ( stamp );
 const { location } = notaplay ( stamp );
 
 return parseInt ( location [ location .length - 1 ] );
+
+}
+
+$_extension ( play, scenario ) {
+
+Object .assign ( Object .getPrototypeOf ( this ), scenario );
+
+Object .keys ( scenario )
+.filter ( direction => direction .startsWith ('$' ) )
+.forEach ( direction => play ( direction .startsWith ( '$_' ) ? $ ( direction .slice ( 2 ) ) : direction .slice ( 1 ) ) );
 
 }
 

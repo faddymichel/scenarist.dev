@@ -6,18 +6,53 @@ $_producer ( play, production ) {
 
 const { stamp } = production;
 const { pilot: notaplay } = play ( stamp );
-const { pilot } = notaplay ( stamp );
+const { scenario: nota, pilot } = notaplay ( stamp );
 
-if ( notaplay !== pilot )
+production .scenario = Object .create ( production .scenario );
+
+if ( notaplay === pilot ) {
+
+const editor = production .scenario;
+
+for ( const direction of [ '$delete', '$move' ] )
+editor [ direction ] = null;
+
+}
+
 return super .$_producer ( play, production );
-
-const { scenario: nota } = notaplay ( stamp );
-
-nota .$edit = null;
 
 }
 
 $_director = undefined
+
+$title ( play, ... title ) {
+
+const { stamp } = this;
+const { pilot: notaplay } = play ( stamp );
+const { scenario: nota, player } = notaplay (stamp );
+const old = {
+
+title: nota .title,
+key: nota .key
+
+};
+
+nota .title = title .join ( ' ' ) .trim ();
+
+if ( ! player )
+return nota .title;
+
+const { scenario: binder } = player ( stamp );
+
+delete binder [ '$' + old .key ];
+
+nota .key = title .join ( '-' ) .toLowerCase ();
+
+binder [ '$' + nota .key ] = nota;
+
+return nota .title;
+
+}
 
 $delete ( play ) {
 

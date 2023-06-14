@@ -9,6 +9,7 @@
     "./nota/directory": "./nota/directory.js",
     "./nota/navigation": "./nota/navigation.js",
     "./nota/shell": "./nota/shell.js",
+    "./nota/composer": "./nota/composer.js",
     "./nota/editor": "./nota/editor.js",
     "./nota/export": "./nota/export.js",
     "./oscilla": "./oscilla/index.js"
