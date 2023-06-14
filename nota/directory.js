@@ -127,7 +127,7 @@ return parseInt ( location [ location .length - 1 ] );
 
 $_extension ( play, scenario ) {
 
-Object .assign ( Object .getPrototypeOf ( this ), scenario );
+Object .assign ( this, scenario );
 
 Object .keys ( scenario )
 .filter ( direction => direction .startsWith ('$' ) )
