@@ -8,43 +8,45 @@ const left = {
   "}": "{",
 };
 
-export default class Formatter {
-  output = [[]];
-  $_director(play, line) {
-    // const  formatter  = this;
-    // const { output } = formatter;
+const declarationKeyWords = ['var', 'let', 'const']
+const assignmentOperators = [
+  '=', '+=', '-=', '*=', '/=', '%=', '**=', '<<=', '>>=', '>>>=', '&=', '^=', '|=', '&&=', '||=', '??='
+]
 
-    if (typeof line === "symbol") {
-      return;
+export default class Formatter {
+  output = [];
+  $_director(play, line) {
+    const  formatter  = this;
+    const { output } = formatter;
+
+    if (typeof line === "symbol" || line.trim() == '') {
+      return output
+      .map((line) =>
+        line.map((token) => token.formattedValue || token.value).join("")
+      ).join('\n');
     }
 
     const tokens = jsTokens(line.trim());
+    
+    output.push([])
     for (const token of tokens) {
       if (token.done) break;
-      console.log(token);
-      // push new line if last token was one of {[(;
-      // if (
-      //   output.length > 0 &&
-      //   [";", "(", "[", ")", "}", "]"].includes(output[output.length - 1].value)
-      // ) {
-      //   output.push({ type: "Punctuator", value: "\n" });
-      // }
-
-      play(Symbol.for(token.type), token, this.output);
+      play(Symbol.for(token.type), token, output);
     }
-    return this.output
+    this.processNewLine(output)
+
+    return output
       .map((line) =>
         line.map((token) => token.formattedValue || token.value).join("")
-      )
-      .join("\n");
+      ).join('\n');
   }
 
   $_IdentifierName(play, token) {
     const { output } = this;
 
-    if (output.length === 0) {
-      output.push([]);
-    }
+    // if (output.length === 0) {
+    //   output.push([]);
+    // }
 
     const line = output.pop();
     const lastToken = line.pop();
@@ -59,8 +61,6 @@ export default class Formatter {
 
     line.push(token);
     output.push(line);
-    // console.log("logggg");
-    // console.log(output);
   }
 
   // $_WhiteSpace(play, token, output) {
@@ -77,6 +77,8 @@ export default class Formatter {
     const lastToken = line.pop();
     if (lastToken === undefined) {
       line.push(token);
+      output.push(line);
+      return
     }
 
     switch (token.value) {
@@ -147,48 +149,186 @@ export default class Formatter {
     line.push(token);
     output.push(line);
   }
-  // $_NoSubstitutionTemplate(play, token, output) {
-  //   AddWhitespace(token, output);
+  $_NoSubstitutionTemplate(play, token) {
+    const { output } = this;
 
-  //   output.push(token);
-  // }
-  // $_TemplateHead(play, token, output) {
-  //   AddWhitespace(token, output);
+    if (output.length === 0) {
+      output.push([]);
+    }
 
-  //   output.push(token);
-  // }
-  // $_TemplateMiddle(play, token, output) {
-  //   AddWhitespace(token, output);
+    const line = output.pop();
+    line.push(token);
+    output.push(line);
 
-  //   output.push(token);
-  // }
-  // $_TemplateTail(play, token, output) {
-  //   AddWhitespace(token, output);
+    token.formattedValue = " " + token.value;
+  }
+  $_TemplateHead(play, token) {
+    const { output } = this;
 
-  //   output.push(token);
-  // }
-  // $_MultiLineComment(play, token, output) {
-  //   output.push(token);
-  // }
-  // $_SingleLineComment(play, token, output) {
-  //   output.push(token);
-  // }
-  // $_PrivateIdentifier(play, token, output) {
-  //   AddWhitespace(token, output);
+    if (output.length === 0) {
+      output.push([]);
+    }
 
-  //   output.push(token);
-  // }
-  // $_NumericLiteral(play, token, output) {
-  //   AddWhitespace(token, output);
+    const line = output.pop();
+    line.push(token);
+    output.push(line);
 
-  //   output.push(token);
+    token.formattedValue = " " + token.value;
+  }
+  $_TemplateMiddle(play, token) {
+    const { output } = this;
+
+    if (output.length === 0) {
+      output.push([]);
+    }
+
+    const line = output.pop();
+    line.push(token);
+    output.push(line);
+
+    token.formattedValue = " " + token.value;
+  }
+  $_TemplateTail(play, token) {
+    const { output } = this;
+
+    if (output.length === 0) {
+      output.push([]);
+    }
+
+    const line = output.pop();
+    line.push(token);
+    output.push(line);
+
+    token.formattedValue = " " + token.value;
+  }
+  $_MultiLineComment(play, token) {
+    const { output } = this;
+
+    if (output.length === 0) {
+      output.push([]);
+    }
+
+    const line = output.pop();
+    line.push(token);
+    output.push(line);
+  }
+  $_SingleLineComment(play, token) {
+    const { output } = this;
+
+    if (output.length === 0) {
+      output.push([]);
+    }
+
+    const line = output.pop();
+    line.push(token);
+    output.push(line);
+  }
+  $_PrivateIdentifier(play, token) {
+    const { output } = this;
+
+    if (output.length === 0) {
+      output.push([]);
+    }
+
+    const line = output.pop();
+    line.push(token);
+    output.push(line);
+
+    token.formattedValue = " " + token.value;
+  }
+  $_NumericLiteral(play, token) {
+    const { output } = this;
+
+    if (output.length === 0) {
+      output.push([]);
+    }
+
+    const line = output.pop();
+    line.push(token);
+    output.push(line);
+
+    token.formattedValue = " " + token.value;
+  }
+  // $_LineTerminatorSequence(play, token) {
+  //   const { output } = this;
+
+  //   if (output.length === 0) {
+  //     output.push([]);
+  //   }
+
+  //   const line = output.pop();
+  //   line.push(token);
+  //   output.push(line);
   // }
-  // $_LineTerminatorSequence(play, token, output) {
-  //   // skipped
-  // }
-  // $_Invalid(play, token, output) {
-  //   output.push(token);
-  // }
+  $_Invalid(play, token) {
+    const { output } = this;
+
+    if (output.length === 0) {
+      output.push([]);
+    }
+
+    const line = output.pop();
+    line.push(token);
+    output.push(line);
+
+    token.formattedValue = " " + token.value;
+  }
+
+  processNewLine(output){
+    const lastLine = output.pop()
+    if(output.length == 0){
+      output.push(lastLine)
+      return
+    }
+
+    const nextToLastLine = output.pop()
+
+    if(
+      this.isBlockOpenning(nextToLastLine) ||
+      this.isBlockClosing(lastLine) ||
+      this.isBlockClosed(nextToLastLine) || 
+      this.haveAssignmentsEnded(nextToLastLine, lastLine) ||
+      this.haveDeclarationsEnded(nextToLastLine, lastLine) ||
+      this.haveFunctionCallsEnded(nextToLastLine, lastLine)
+    ){
+      nextToLastLine.push({ type: "LineTerminatorSequence", value: "\n" })
+      output.push(nextToLastLine)
+      output.push(lastLine); 
+      return
+    }
+
+    output.push(nextToLastLine)
+    output.push(lastLine)
+  }
+
+  isBlockClosed(nextToLastLine){
+    return nextToLastLine.length > 0 && nextToLastLine[0].value == '}'
+  }
+
+  isLastLineNewLine(nextToLastLine){
+    return nextToLastLine.length > 0 && nextToLastLine[0].type == 'LineTerminatorSequence'
+  }
+
+  isBlockOpenning(nextToLastLine){
+    const len = nextToLastLine.length
+    return len > 0 && nextToLastLine[len-1].value === '{'
+  }
+
+  isBlockClosing(lastLine){
+    return lastLine.length > 0 && lastLine[0].value == '}'
+  }
+
+  haveDeclarationsEnded(nextToLastLine, lastLine){
+    return nextToLastLine.length > 0  && lastLine.length > 0 && declarationKeyWords.includes(nextToLastLine[0].value) && !declarationKeyWords.includes(lastLine[0].value)
+  }
+
+  haveAssignmentsEnded(nextToLastLine, lastLine){
+    return nextToLastLine.length > 1 && assignmentOperators.includes(nextToLastLine[1].value) && (lastLine.length < 2 ||  !assignmentOperators.includes(lastLine[1].value))
+  }
+
+  haveFunctionCallsEnded(nextToLastLine, lastLine){
+    return nextToLastLine.length > 1 && nextToLastLine[1].value == '(' && (lastLine.length < 2 ||  lastLine[1].value != '(')
+  }
 }
 
 export function AddWhitespace(token, output) {
@@ -208,39 +348,3 @@ export function IsLastOutputIncluded(output, list) {
 
   return false;
 }
-
-// TODO: add remaining token types
-
-/*
-    Notes:
-        - . have whitespace before, no whitespace after
-        - if token is at beggining of line, no whitespace
-        - if toekn is at end of line, no whitespace
-        - , and ; don't have whitespaces before
-        - any of "(), {}, []" don't have whitespaces inside if empty, have before
-        - : have whitespace after, except in ternay btengan -> before and after
-        - operators have whitespace before and after
-        - 
-        all identifiers have spaces before except:
-        - begging of line
-        - if an identifier is superceded with a '.'
-        - 
-
-    Q's:
-        - should whitespace be removed?
-
-        \n\n with new blocks, 
-        \n with declaration
-        declarations, assignments, functionscalls separated by \n\n
-
-    notes:
-      statements acquire single lines
-      declarations acquire single lines
-
-    categories:
-      declaration
-      function call
-      assignment
-      if, for
-
-*/
