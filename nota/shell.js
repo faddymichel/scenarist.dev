@@ -60,7 +60,9 @@ $_online ( play, line ) {
 
 const shell = this;
 const { console } = shell;
-const resolution = shell .play ( ... ( line = line .trim () ) ?.length ? line .split ( /\s+/ ) : [] );
+
+Promise .resolve ( shell .play ( ... ( line = line .trim () ) ?.length ? line .split ( /\s+/ ) : [] ) )
+.then ( resolution => {
 
 if ( [ 'string', 'number', 'boolean' ] .includes ( typeof resolution ) )
 console .log ( resolution );
@@ -68,7 +70,9 @@ console .log ( resolution );
 else if ( typeof resolution === 'function' )
 shell .play = resolution;
 
-play ( Symbol .for ( 'prompt' ) );
+} )
+.catch ( error => console .error ( error .toString () ) )
+.finally ( () => play ( Symbol .for ( 'prompt' ) ) );
 
 }
 

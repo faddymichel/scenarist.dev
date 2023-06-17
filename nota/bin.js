@@ -3,38 +3,27 @@
 import Scenarist from 'scenarist.dev';
 import Nota from 'scenarist.dev/nota';
 import Shell from 'scenarist.dev/nota/shell';
-import Navigation from 'scenarist.dev/nota/navigation';
-import Composer from './composer.js';
-import Editor from './editor.js';
-import $export from './export.js';
+import Directory from 'scenarist.dev/nota/directory';
 
 const $ = Symbol .for;
 const play = Nota .publish ( {
 
 medium: new Shell,
-directory: new Navigation (),
-content: [
+directory: new Directory,
+content: {
 
-[
+'Al Yallah': [
 
 'Yallah?',
 'Salah Abdallah!'
 
 ],
-[
+'Al Koko Wawa': [
 
 'koko wawa'
 
 ]
 
-]
-
-} );
-
-play ( $ ( 'extension' ), {
-
-$new: new Composer (),
-$edit: new Editor (),
-$export
+}
 
 } );
