@@ -1,33 +1,17 @@
 {
   "name": "scenarist.dev",
-  "version": "0.4.1",
-  "description": "To Handle Multiple Events Using a Single Function",
+  "version": "0.5.0",
+  "description": "For writing playable scenarios",
   "type": "module",
-  "exports": {
-    ".": "./index.js",
-    "./nota": "./nota/index.js",
-    "./nota/directory": "./nota/directory.js",
-    "./nota/navigation": "./nota/navigation.js",
-    "./nota/shell": "./nota/shell.js",
-    "./nota/composer": "./nota/composer.js",
-    "./nota/editor": "./nota/editor.js",
-    "./nota/export": "./nota/export.js",
-    "./oscilla": "./oscilla/index.js"
-  },
-  "scripts": {
-    "nota": "node nota"
-  },
-  "bin": {
-    "nota": "./nota/bin.js"
-  },
+  "exports": "./index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/faddymichel/scenarist.git"
+    "url": "git+https://github.com/scenarist-dev/scenarist.git"
   },
-  "author": "Faddy Violette Michel <faddy.michel@gmail.com>",
+  "author": "Faddy Michel <faddy@scenarist.dev>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/faddymichel/scenarist/issues"
+    "url": "https://github.com/scenarist-dev/scenarist/issues"
   },
-  "homepage": "https://github.com/faddymichel/scenarist#readme"
+  "homepage": "https://github.com/scenarist-dev/scenarist#readme"
 }
