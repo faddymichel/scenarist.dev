@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import Scenarist from 'scenarist.dev';
-import Nota from 'scenarist.dev/nota';
-import Shell from 'scenarist.dev/nota/shell';
-import Directory from 'scenarist.dev/nota/directory';
+import Nota from 'nota.scenarist.dev';
+import Shell from 'shell.scenarist.dev';
+import Directory from 'nota.scenarist.dev/directory';
 
 const $ = Symbol .for;
 const play = Nota .publish ( {

@@ -1,33 +1,28 @@
 {
-  "name": "scenarist.dev",
-  "version": "0.4.1",
-  "description": "To Handle Multiple Events Using a Single Function",
+  "name": "nota.scenarist.dev",
+  "version": "0.1.0",
+  "description": "For writing playable notes",
   "type": "module",
   "exports": {
     ".": "./index.js",
-    "./nota": "./nota/index.js",
-    "./nota/directory": "./nota/directory.js",
-    "./nota/navigation": "./nota/navigation.js",
-    "./nota/shell": "./nota/shell.js",
-    "./nota/composer": "./nota/composer.js",
-    "./nota/editor": "./nota/editor.js",
-    "./nota/export": "./nota/export.js",
-    "./oscilla": "./oscilla/index.js"
+    "./directory": "./directory.js"
   },
   "scripts": {
-    "nota": "node nota"
+    "nota": "node bin.js"
   },
-  "bin": {
-    "nota": "./nota/bin.js"
-  },
+  "bin": "./bin.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/faddymichel/scenarist.git"
+    "url": "git+https://github.com/scenarist-dev/nota.git"
   },
-  "author": "Faddy Violette Michel <faddy.michel@gmail.com>",
+  "author": "Faddy Michel <faddy@scenarist.dev>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/faddymichel/scenarist/issues"
+    "url": "https://github.com/scenarist-dev/nota/issues"
   },
-  "homepage": "https://github.com/faddymichel/scenarist#readme"
+  "homepage": "https://github.com/scenarist-dev/nota#readme",
+  "dependencies": {
+    "scenarist.dev": "^0.5.0",
+    "shell.scenarist.dev": "^0.1.0"
+  }
 }
