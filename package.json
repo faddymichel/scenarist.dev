@@ -10,7 +10,9 @@
   "scripts": {
     "nota": "node bin.js"
   },
-  "bin": "./bin.js",
+  "bin": {
+    "nota": "./bin.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/scenarist-dev/nota.git"

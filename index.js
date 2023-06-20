@@ -219,6 +219,14 @@ return content;
 
 }
 
+$json ( play, ... definition ) {
+
+const { title, content } = this .#parse ( ... definition );
+
+return play ( $ ( 'note' ), { title, content: JSON .parse ( content .join ( ' ' ) ) } );
+
+}
+
 $delete ( play ) {
 
 const { stamp } = this;

@@ -1,3 +1,5 @@
+import { readFile } from 'fs/promises';
+
 const $ = Symbol .for;
 
 export default class Directory {
@@ -25,14 +27,12 @@ return notaplay ( ... direction, ... order );
 
 }
 
-async $import ( play, path ) { return play ( $ ( 'extension' ), await import ( path ) ) }
-
 $_extension ( play, scenario ) {
 
 Object .assign ( this, scenario );
 
 Object .keys ( scenario )
-.filter ( direction => direction .startsWith ('$' ) )
+.filter ( direction => direction .startsWith ('$' ) && typeof scenario [ direction ] === 'object' )
 .forEach ( direction => play ( direction .startsWith ( '$_' ) ? $ ( direction .slice ( 2 ) ) : direction .slice ( 1 ) ) );
 
 }
