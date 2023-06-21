@@ -7,6 +7,8 @@ export default class Nota {
 
 constructor ( { content, title, directory } ) {
 
+content = content || {};
+
 Object .assign ( this, { content, title, directory } );
 
 }
@@ -60,7 +62,7 @@ get $size () { return this .$_content .length }
 
 $_note ( play, { content, title, directory } ) {
 
-const { scenario: nota } = play ( this .stamp );
+const nota = this;
 const { $_content: note } = nota;
 
 if ( ! ( note instanceof Array ) )
@@ -216,14 +218,6 @@ content = null;
 }
 
 return content;
-
-}
-
-$json ( play, ... definition ) {
-
-const { title, content } = this .#parse ( ... definition );
-
-return play ( $ ( 'note' ), { title, content: JSON .parse ( content .join ( ' ' ) ) } );
 
 }
 
