@@ -1,5 +1,7 @@
 import Scenarist from 'scenarist.dev';
 import Directory from 'nota.scenarist.dev/directory';
+import Editor from 'nota.scenarist.dev/editor';
+import Composer from 'nota.scenarist.dev/composer';
 
 const $ = Symbol .for;
 
@@ -9,30 +11,33 @@ constructor ( { content, title, directory } ) {
 
 content = content || {};
 
-Object .assign ( this, { content, title, directory } );
+Object .assign ( this, { content, title } );
 
 }
 
-$_producer ( play, { pilot, stamp } ) {
+directory = new Directory
+
+extension = {
+
+$compose: new Composer,
+$edit: new Editor
+
+}
+
+$_producer ( play, production ) {
 
 const nota = this;
-const directory = Scenarist ( nota .directory, {
+const { pilot, stamp } = production;
 
-stamp: ( nota .stamp = stamp ),
-pilot: play
+nota .stamp = stamp;
+nota .$_director = nota .directory;
 
-} );
-
-nota .$_director = ( play, ... order ) => directory ( ... order );
-
-play ( $ ( 'structure' ) );
-
-if ( play === pilot )
-for ( const direction of [ 'delete', 'move', 'order' ] )
-Object .defineProperty ( nota, '$' + direction, { value: null } );
+play ( $ ( 'extension' ), nota .extension );
 
 if ( typeof nota .$_content === 'object' )
 Object .defineProperty ( nota, '$=', { value: null } );
+
+play ( $ ( 'structure' ) );
 
 }
 
@@ -49,7 +54,7 @@ const keys = Object .keys ( nota .content );
 
 if ( keys .length )
 for ( const key of keys )
-play ( $ ( 'note' ), { 
+play ( $ ( 'nota' ), { 
 
 content: nota .content [ key ],
 title: nota .content instanceof Array ? undefined : key .trim () .split ( /\s+/ )
@@ -60,21 +65,21 @@ title: nota .content instanceof Array ? undefined : key .trim () .split ( /\s+/ 
 
 get $size () { return this .$_content .length }
 
-$_note ( play, { content, title, directory } ) {
+$_nota ( play, details ) {
 
 const nota = this;
+const { content, title, directory } = details || {};
 const { $_content: note } = nota;
 
 if ( ! ( note instanceof Array ) )
 return false;
 
-const { constructor: Nota } = Object .getPrototypeOf ( nota );
-const child = new Nota ( {
+const child = new ( details .Nota || Nota ) ( {
 
 stamp: nota .stamp,
 content,
 title,
-directory: directory || nota .directory
+directory: ( directory || nota .directory ) || new Editor
 
 } );
 
@@ -128,162 +133,10 @@ return nota .title;
 
 const nota = this;
 
+if ( ! content .length )
+return nota .$_content;
+
 return ( content = nota [ typeof nota .$_content ] ( ... content ) ) === null ? false : ( nota .$_content = content );
-
-}
-
-#parse ( ... definition ) {
-
-const index = definition .indexOf ( '=' );
-const title = definition .slice ( 0, index < -1 ? 0 : index );
-const content = definition .slice ( index + 1 );
-
-return { title, content };
-
-}
-
-$nota ( play, ... title ) {
-
-return play ( $ ( 'note' ), { content: [], title } );
-
-}
-
-$string ( play, ... definition ) {
-
-const nota = this;
-let { title, content } = nota .#parse ( ... definition );
-
-return ( content = nota .string ( ... content ) ) === null ? false : play ( $ ( 'note' ), { title, content } );
-
-}
-
-string ( ... content ) {
-
-return ( content = content .join ( ' ' ) .trim () ) ?.length ? content : null;
-
-}
-
-$number ( play, ... definition ) {
-
-const nota = this;
-let { title, content } = nota .#parse ( ... definition );
-
-return ( content = nota .number ( ... content ) ) === null ? false : play ( $ ( 'note' ), { content } );
-
-}
-
-number ( ... content ) {
-
-return isNaN ( content = parseFloat ( content .join () ) ) ? null : content;
-
-}
-
-$boolean ( play, ... definition ) {
-
-const nota = this;
-let { title, content } = nota .#parse ( ... definition );
-
-return ( content = nota .boolean ( ... content ) ) === null ? false : play ( $ ( 'note' ), { title, content } );
-
-}
-
-boolean ( ... content ) {
-
-switch ( content = content .join ( ' ' ) ) {
-
-case 'true':
-case 'ah':
-case 'on':
-case 'yes':
-case '1':
-
-content = true;
-
-break;
-
-case 'false':
-case 'la':
-case 'off':
-case 'no':
-case '0':
-
-content = false;
-
-break;
-
-default:
-
-content = null;
-
-}
-
-return content;
-
-}
-
-$delete ( play ) {
-
-const { stamp } = this;
-const { location, player } = play ( stamp );
-
-if ( ! player )
-return false;
-
-const { scenario: nota } = player ( stamp );
-const { $_content: note } = nota;
-
-if ( ! ( note instanceof Array ) )
-return false;
-
-const order = play ( Symbol .for ( 'order' ) );
-
-note .splice ( order - 1, 1 );
-
-delete nota [ '$' + ( note .length + 1 ) ];
-
-return true;
-
-}
-
-$move ( play, direction ) {
-
-const nota = this;
-const { stamp } = nota;
-const { location, player } = play ( stamp );
-const { scenario: { $_content: note } } = player ( stamp );
-
-if ( ! note )
-return false;
-
-direction = parseInt ( direction );
-
-const order = play ( Symbol .for ( 'order' ) );
-const distance = Math .abs ( direction );
-
-if ( ! note || nota === undefined || order + direction < 1 || order + direction > note .length )
-return false;
-
-// When moving down
-if ( direction > 0 )
-note .splice ( order - 1, distance + 1, ... note .slice ( order, order + distance ), nota );
-
-// When moving up
-else if ( direction < 0 )
-note .splice ( order - distance - 1, distance + 1, nota, ... note .slice ( order - distance - 1, order - 1 ) );
-
-return true;
-
-}
-
-$order ( play, order ) {
-
-const old = play ( $ ( 'order' ) );
-const direction = parseInt ( order ) - old;
-
-if ( isNaN ( direction ) )
-return false;
-
-return play ( 'move', direction );
 
 }
 
@@ -336,7 +189,7 @@ const directions = [
 ... ( play ( $ ( 'directions' ), {
 
 input, filtered,
-scenario: nota .directory
+scenario: nota .$_director
 
 } ) || [] )
 
