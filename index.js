@@ -20,7 +20,8 @@ stamp: order [ 1 ] ?.stamp || Symbol .for ( 'scenarist.dev/stamp' ),
 scenario: order [ 0 ],
 player: order [ 1 ] ?.player,
 pilot: order [ 1 ] ?.pilot || play,
-location: order [ 1 ] ?.[ $ .location ] || []
+location: order [ 1 ] ?.[ $ .location ] || [],
+setting: order [ 1 ] ?.[ $ .setting ]
 
 } );
 
@@ -42,18 +43,15 @@ else
 throw TypeError ( "Scenarist: 'scenario' must be either an 'object' or 'function'." );
 
 let { production, plot } = this;
-let { play, stamp, scenario, location, player, pilot } = production;
+let { play, stamp, scenario, location, player, pilot, setting } = production;
 let [ direction ] = order;
 let conflict, $direction;
 
 if ( direction === stamp )
 return production;
 
-else if ( typeof scenario === 'function' ) {
-
-return scenario .call ( player ( stamp ) .scenario, player, ... order );
-
-}
+else if ( typeof scenario === 'function' )
+return scenario .call ( setting ?.scenario || player ( stamp ) .scenario, setting ?.play || player, ... order );
 
 else if (
 
@@ -104,11 +102,8 @@ switch ( typeof conflict ) {
 case 'object':
 case 'function':
 
-if ( ! conflict ) {
-
+if ( ! conflict )
 return;
-
-}
 
 if ( ! plot .get ( conflict ) )
 plot .set ( conflict, Scenarist ( conflict, {
@@ -116,7 +111,8 @@ plot .set ( conflict, Scenarist ( conflict, {
 stamp,
 player: play,
 pilot,
-[ $ .location ]: [ ... location, direction ]
+[ $ .location ]: [ ... location, direction ],
+[ $ .setting ]: setting
 
 } ) );
 
@@ -137,6 +133,7 @@ const $ = {
 
 stamp: Symbol ( 'senarist.dev/stamp' ),
 play: Symbol ( 'senarist.dev/$play' ),
-location: Symbol ( 'senarist.dev/$location' )
+location: Symbol ( 'senarist.dev/$location' ),
+setting: Symbol ( 'scenarist.dev/setting' )
 
 };
