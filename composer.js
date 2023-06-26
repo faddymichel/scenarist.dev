@@ -1,8 +1,6 @@
-import Direction from 'nota.scenarist.dev/direction'
-
 const $ = Symbol .for;
 
-export default class Composer extends Direction {
+export default class Composer {
 
 static parse ( ... definition ) {
 
@@ -38,13 +36,13 @@ $number ( play, ... definition ) {
 
 let { title, content } = Composer .parse ( ... definition );
 
-return ( content = Composer .number ( ... content ) ) === null ? false : play ( $ ( 'nota' ), { content } );
+return ( content = Composer .number ( ... content ) ) === null ? false : play ( $ ( 'nota' ), { title, content } );
 
 }
 
 static number ( ... content ) {
 
-return isNaN ( content = parseFloat ( content .join () ) ) ? null : content;
+return isNaN ( content = parseFloat ( content .join ( '.' ) ) ) ? null : content;
 
 }
 

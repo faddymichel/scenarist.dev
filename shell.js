@@ -7,11 +7,14 @@ export default {
 async [ '$>' ] ( play, path ) {
 
 if ( path .endsWith ( 'js' ) )
-return play ( $ ( 'extension' ), await import ( path, { assert: { type: 'json' } } ) );
+return play ( $ ( 'extension' ), await import ( path ) );
 
-const { pilot: notaplay } = play ( this .stamp );
+return play ( $ ( 'nota' ), {
 
-return notaplay ( 'json', path, '=', await readFile ( path, 'utf8' ) );
+title: [ path ],
+content: JSON .parse ( await readFile ( path, 'utf8' ) )
+
+} );
 
 }
 

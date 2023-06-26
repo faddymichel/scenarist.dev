@@ -1,12 +1,8 @@
-import Direction from 'nota.scenarist.dev/direction';
-
 const $ = Symbol .for;
 
-export default class Editor extends Direction {
+export default class Editor {
 
 $_producer ( play, production ) {
-
-super .$_producer ( play, production );
 
 const editor = this;
 const { pilot, player } = production;

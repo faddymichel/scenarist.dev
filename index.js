@@ -136,7 +136,7 @@ const nota = this;
 if ( ! content .length )
 return nota .$_content;
 
-return ( content = nota [ typeof nota .$_content ] ( ... content ) ) === null ? false : ( nota .$_content = content );
+return ( content = Composer [ typeof nota .$_content ] ( ... content ) ) === null ? false : ( nota .$_content = content );
 
 }
 
@@ -281,6 +281,10 @@ case 'string':
 query = query .join ( ' ' ) .toLowerCase ();
 
 return note .toLowerCase () .includes ( query ) || ( title || '' ) .toLowerCase () .includes ( query ) ? [ play ] : [];
+
+case 'number':
+
+return note == parseFloat ( query .join ( '.' ) ) || title .toLowerCase () .includes ( query .join ( ' ' ) ) ? [ play ] : [];
 
 case 'object':
 
