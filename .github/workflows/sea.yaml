@@ -1,0 +1,28 @@
+name: Release
+on:
+    push
+
+jobs:
+    sea:
+        name: Release Single Executable Application
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3.5.3
+            - uses: actions/setup-node@v3
+              with:
+                node-version: 20
+            
+            - run: |
+                sudo npm install --global rollup
+                echo "export default {input: 'src/main.js',	output: {file: 'bundle.js',	format: 'cjs'}};" > rollup.config.js
+                rollup --config rollup.config.js
+                node --experimental-sea-config sea-config.json
+                cp $(command -v node) nota
+                npx postject nota NODE_SEA_BLOB sea-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
+
+
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              with:
+                token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+                files: nota
